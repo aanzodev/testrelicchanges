@@ -1,0 +1,406 @@
+(function() {
+  'use strict';
+
+  console.log('l;oading game stats');
+
+  const GameStats = {
+    initialized: false,
+    currentGame: null,
+    startTime: null,
+    trackingInterval: null,
+
+    init() {
+      if (this.initialized) return;
+      console.log('Injecting');
+      
+      // Ensure storage structures exist      if (!localStorage.getItem('gameStats')) {
+        localStorage.setItem('gameStats', JSON.stringify({}));
+      }
+      if (!localStorage.getItem('gameFavorites')) {
+        localStorage.setItem('gameFavorites', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('gameCategories')) {
+        this.initializeDefaultCategories();
+      }
+      
+      this.initialized = true;
+      console.log('Loaded game stats');
+      console.log('Games tracked ', Object.keys(this.getAllStats()).length);
+      console.log('Favorites: ', this.getFavorites().length);
+    },
+
+    initializeDefaultCategories() {
+      const defaultCategories = {
+        'Action': [],
+        'Puzzle': [],
+        'Sports': [],
+        'Strategy': [],
+        'Arcade': [],
+        'Adventure': [],
+        'Multiplayer': [],
+        'Casual': [],
+        'Racing': [],
+        'Shooter': []
+      };
+      localStorage.setItem('gameCategories', JSON.stringify(defaultCategories));
+      console.log('Default ');
+    },
+
+
+    startTracking(gameUrl) {
+      if (!gameUrl) {
+        console.warn('Game was not succesfully tracked');
+        return;
+      }
+      
+      this.stopTracking();
+      
+      this.currentGame = gameUrl;
+      this.startTime = Date.now();
+      
+      console.log('Tracking', gameUrl);
+      
+
+      const stats = this.getGameStats(gameUrl);
+      stats.playCount = (stats.playCount || 0) + 1;
+      stats.lastPlayed = Date.now();
+      if (!stats.firstPlayed) {
+        stats.firstPlayed = Date.now();
+      }
+      this.saveGameStats(gameUrl, stats);
+      
+      console.log('🎮 Play count:', stats.playCount);
+      
+// every 30 seconds
+      this.trackingInterval = setInterval(() => {
+        this.updatePlayTime();
+      }, 30000);
+    },
+
+    stopTracking() {
+      if (this.trackingInterval) {
+        clearInterval(this.trackingInterval);
+        this.trackingInterval = null;
+      }
+      
+      if (this.currentGame && this.startTime) {
+        this.updatePlayTime();
+        const sessionTime = Math.floor((Date.now() - this.startTime) / 1000);
+        console.log('⏹️ Stopped tracking:', this.currentGame);
+        console.log('⏱️ Session time:', this.formatTime(sessionTime));
+      }
+      
+      this.currentGame = null;
+      this.startTime = null;
+    },
+
+    updatePlayTime() {
+      if (!this.currentGame || !this.startTime) return;
+      
+      const stats = this.getGameStats(this.currentGame);
+      stats.totalTime = (stats.totalTime || 0) + 30; // Add 30 secs
+      this.saveGameStats(this.currentGame, stats);
+    },
+
+
+    getGameStats(gameUrl) {
+      const allStats = JSON.parse(localStorage.getItem('gameStats') || '{}');
+      return allStats[gameUrl] || {
+        totalTime: 0,
+        playCount: 0,
+        lastPlayed: null,
+        firstPlayed: Date.now()
+      };
+    },
+
+    saveGameStats(gameUrl, stats) {
+      const allStats = JSON.parse(localStorage.getItem('gameStats') || '{}');
+      allStats[gameUrl] = stats;
+      localStorage.setItem('gameStats', JSON.stringify(allStats));
+    },
+
+    getAllStats() {
+      return JSON.parse(localStorage.getItem('gameStats') || '{}');
+    },
+
+    getTotalPlaytime() {
+      const allStats = this.getAllStats();
+      let total = 0;
+      Object.values(allStats).forEach(stat => {
+        total += stat.totalTime || 0;
+      });
+      return total;
+    },
+
+    getTotalPlayCount() {
+      const allStats = this.getAllStats();
+      let total = 0;
+      Object.values(allStats).forEach(stat => {
+        total += stat.playCount || 0;
+      });
+      return total;
+    },
+
+    getUniqueGamesPlayed() {
+      const allStats = this.getAllStats();
+      return Object.keys(allStats).filter(url => {
+        const stats = allStats[url];
+        return stats.playCount > 0;
+      }).length;
+    },
+
+    formatTime(seconds) {
+      if (!seconds || seconds < 60) {
+        return `${seconds || 0}s`;
+      }
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      
+      if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+      }
+      return `${minutes}m ${secs}s`;
+    },
+
+    // ===== FAVORITES SYSTEM =====
+    getFavorites() {
+      return JSON.parse(localStorage.getItem('gameFavorites') || '[]');
+    },
+
+    isFavorite(gameUrl) {
+      const favorites = this.getFavorites();
+      return favorites.includes(gameUrl);
+    },
+
+    toggleFavorite(gameUrl) {
+      let favorites = this.getFavorites();
+      const index = favorites.indexOf(gameUrl);
+      
+      if (index > -1) {
+        favorites.splice(index, 1);
+        console.log('Ts was removed from favorites', gameUrl);
+      } else {
+        favorites.push(gameUrl);
+        console.log('Check favorites', gameUrl);
+      }
+      
+      localStorage.setItem('gameFavorites', JSON.stringify(favorites));
+      return index === -1; // Return true if now favorited
+    },
+
+    // ===== CATEGORIES SYSTEM =====
+    getCategories() {
+      return JSON.parse(localStorage.getItem('gameCategories') || '{}');
+    },
+
+    getGameCategory(gameUrl) {
+      const categories = this.getCategories();
+      for (const [category, games] of Object.entries(categories)) {
+        if (games.includes(gameUrl)) {
+          return category;
+        }
+      }
+      return 'Uncategorized';
+    },
+
+    addGameToCategory(gameUrl, category) {
+      const categories = this.getCategories();
+      if (!categories[category]) {
+        categories[category] = [];
+      }
+      
+
+      for (const cat in categories) {
+        const index = categories[cat].indexOf(gameUrl);
+        if (index > -1) {
+          categories[cat].splice(index, 1);
+        }
+      }
+      
+
+      if (!categories[category].includes(gameUrl)) {
+        categories[category].push(gameUrl);
+      }
+      
+      localStorage.setItem('gameCategories', JSON.stringify(categories));
+      console.log('📁 Moved to category:', category);
+    },
+
+    getGamesByCategory(category) {
+      const categories = this.getCategories();
+      return categories[category] || [];
+    },
+
+
+    sortGamesByTime(games) {
+      const allStats = this.getAllStats();
+      return [...games].sort((a, b) => {
+        const timeA = allStats[a.url]?.totalTime || 0;
+        const timeB = allStats[b.url]?.totalTime || 0;
+        return timeB - timeA;
+      });
+    },
+
+    sortGamesByPlayCount(games) {
+      const allStats = this.getAllStats();
+      return [...games].sort((a, b) => {
+        const countA = allStats[a.url]?.playCount || 0;
+        const countB = allStats[b.url]?.playCount || 0;
+        return countB - countA;
+      });
+    },
+
+    sortGamesByRecent(games) {
+      const allStats = this.getAllStats();
+      return [...games].sort((a, b) => {
+        const timeA = allStats[a.url]?.lastPlayed || 0;
+        const timeB = allStats[b.url]?.lastPlayed || 0;
+        return timeB - timeA;
+      });
+    },
+
+    filterByFavorites(games) {
+      const favorites = this.getFavorites();
+      return games.filter(game => favorites.includes(game.url));
+    },
+
+
+    createFavoriteButton(gameUrl, isFavorited) {
+      return `
+        <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" 
+                onclick="event.stopPropagation(); window.GameStats.handleFavoriteClick('${gameUrl}', this)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="${isFavorited ? 'currentColor' : 'none'}" 
+               stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </button>
+      `;
+    },
+
+    handleFavoriteClick(gameUrl, buttonElement) {
+      const isFav = this.toggleFavorite(gameUrl);
+      
+      if (isFav) {
+        buttonElement.classList.add('favorited');
+        buttonElement.querySelector('svg').setAttribute('fill', 'currentColor');
+      } else {
+        buttonElement.classList.remove('favorited');
+        buttonElement.querySelector('svg').setAttribute('fill', 'none');
+      }
+      
+
+      const activeFilter = document.querySelector('.filter-btn.active');
+      if (activeFilter && activeFilter.dataset.filter === 'favorites') {
+        if (window.filterGames) {
+          window.filterGames('favorites');
+        }
+      }
+    },
+
+    createStatsDisplay(gameUrl, gameName) {
+      const stats = this.getGameStats(gameUrl);
+      const timeFormatted = this.formatTime(stats.totalTime);
+      
+      return `
+        <div class="game-stats-tooltip">
+          <div class="stat-row">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-label">Time Played:</span>
+            <span class="stat-value">${timeFormatted}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-icon">🎮</span>
+            <span class="stat-label">Play Count:</span>
+            <span class="stat-value">${stats.playCount || 0}</span>
+          </div>
+          ${stats.lastPlayed ? `
+            <div class="stat-row">
+              <span class="stat-icon">📅</span>
+              <span class="stat-label">Last Played:</span>
+              <span class="stat-value">${this.formatDate(stats.lastPlayed)}</span>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    },
+
+    formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      
+      return date.toLocaleDateString();
+    },
+
+    createFilterButtons() {
+      return `
+        <div class="game-filters">
+          <button class="filter-btn active" data-filter="all" onclick="window.filterGames('all')">
+            📋 All Games
+          </button>
+          <button class="filter-btn" data-filter="favorites" onclick="window.filterGames('favorites')">
+            ⭐ Favorites
+          </button>
+          <button class="filter-btn" data-filter="most-played" onclick="window.filterGames('most-played')">
+            🔥 Most Played
+          </button>
+          <button class="filter-btn" data-filter="recent" onclick="window.filterGames('recent')">
+            🕐 Recently Played
+          </button>
+          <button class="filter-btn" data-filter="longest" onclick="window.filterGames('longest')">
+            ⏱️ Most Time
+          </button>
+        </div>
+      `;
+    },
+
+
+    resetGameStats(gameUrl) {
+      const allStats = this.getAllStats();
+      delete allStats[gameUrl];
+      localStorage.setItem('gameStats', JSON.stringify(allStats));
+      console.log('🗑️ Reset stats for:', gameUrl);
+    },
+
+    resetAllStats() {
+      localStorage.setItem('gameStats', JSON.stringify({}));
+      localStorage.setItem('gameFavorites', JSON.stringify([]));
+      console.log('🗑️ All stats reset');
+    },
+
+    exportStats() {
+      return {
+        stats: this.getAllStats(),
+        favorites: this.getFavorites(),
+        categories: this.getCategories(),
+        exportDate: new Date().toISOString(),
+        version: '5.0.0'
+      };
+    },
+
+    importStats(data) {
+      if (data.stats) localStorage.setItem('gameStats', JSON.stringify(data.stats));
+      if (data.favorites) localStorage.setItem('gameFavorites', JSON.stringify(data.favorites));
+      if (data.categories) localStorage.setItem('gameCategories', JSON.stringify(data.categories));
+      console.log('📥 Stats imported successfully');
+      console.log('📊 Imported version:', data.version || 'Unknown');
+    }
+  };
+
+
+  GameStats.init();
+
+
+  window.GameStats = GameStats;
+
+  console.log('Stats were loaded');
+})();
