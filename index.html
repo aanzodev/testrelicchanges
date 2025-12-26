@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relic</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/bare-mux@2/dist/index.js"></script>
+  
+  <link rel="icon" href="others/assets/relic.webp" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./others/assets/css/themes.css" />
+  <link rel="stylesheet" href="./others/assets/css/sidebar.css" />
+  <link rel="stylesheet" href="./others/assets/css/console.css" />
+  <link rel="stylesheet" href="./others/assets/scripts/homepage/css/homepage.css" />
+  <link rel="stylesheet" href="./others/assets/css/daily.css" />
+  <link rel="stylesheet" href="./others/assets/css/homepage-sections.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    .search-iframe-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 100px);
+      background: var(--bg-color, #000001);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px;
+    }
+
+    .search-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logoforanzoml"> <link rel="icon" href="others/assets/relic.webp" /></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link active" id="homeLink" data-page="home" title="Home">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Hσme</span>
+      </a>
+      <a href="#" class="sidebar-link" id="gameLink" data-page="games" title="Games">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+          <polyline points="2 12 22 12"></polyline>
+          <polyline points="7 7 7 22"></polyline>
+          <polyline points="17 7 17 22"></polyline>
+        </svg>
+        <span>Gᾰmes</span>
+      </a>
+      <a href="#" class="sidebar-link" id="emulatedLink" data-page="emulated" title="Emulated Games">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12" y2="18"></line>
+        </svg>
+        <span>Emulated</span>
+      </a>
+      <a href="#" class="sidebar-link" id="searchLink" data-page="search" title="Search">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <span>Search</span>
+      </a>
+      <a href="#" class="sidebar-link" id="appsLink" data-page="apps" title="Shortcuts">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Shortcuts</span>
+      </a>
+      <a href="#" class="sidebar-link" id="settingsLink" data-page="settings" title="Settings">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div id="creditsModal" class="info-modal">
+      <div class="info-modal-content">
+        <span class="info-close" data-modal="creditsModal">&times;</span>
+        <h2>Credits</h2>
+        <div class="info-modal-body">
+          <p><strong>Created by:</strong></p>
+          <ul>
+            <li>Aye-zee</li>
+            <li>Jordan</li>
+            <li>Devin</li>
+            <li>Aydenou</li>
+            <li>Coding4Hours</li>
+          </ul>
+          <p><strong>Credits</strong></p>
+          <ul>
+            <li><a href="https://www.galaxyverse.org/" target="_blank" rel="noopener noreferrer">GalaxyVerse</a></li>
+            <li><a href="https://github.com/JustJxrdanWasDefinetlyTaken" target="_blank" rel="noopener noreferrer">Jordan's Projects</a></li>
+            <li><a href="https://gn-math.dev/" target="_blank" rel="noopener noreferrer">gn-math for some gᾰmes</a></li>
+            <li><p>Aydenou</p></li>
+          </ul>
+          <p><strong>Contributors:</strong></p>
+          <ul>
+            <li>Michael</li>
+            <li>David</li>
+            <li>Dariel</li>
+            <li>Joseluis</li>
+            <li>Fabian</li>
+          </ul>
+          <p><strong>Project Info:</strong></p>
+          <ul>
+            <li>Best development team was here</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="updateLogModal" class="info-modal">
+      <div class="info-modal-content">
+        <span class="info-close" data-modal="updateLogModal">&times;</span>
+        <h2>Update Log V1.2.6</h2>
+        <div class="info-modal-body">
+          <ul>
+            <li>Added a bunch new gᾰmes</li>
+            <li>Revamped the <b>settings</b></li>
+            <li>Fixed Icy Purple Head</li>
+            <li>Updated Bacon May Die</li>
+            <li>Fixed small patches</li>
+            <li>Did some search changes</li>
+            <li>Search styles are updated</li>
+            <li>✨ <b>NEW:</b> Daily Game feature!</li>
+          </ul>
+          <h4>Coming Soon</h4>
+          <ul>
+            <li>More gᾰmes</li>
+            <li>Netflix</li>
+            <li>Spotify</li>
+            <li>More features with yxorp</li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Homepageof the twebsite  -->
+      <div id="content-home" class="content">
+        <div class="carousel-wrapper">
+          <div class="games-carousel">
+            <div class="carousel-track scroll-right-to-left" id="carousel-track-top"></div>
+          </div>
+        </div>
+
+
+        <div class="homepage-sections">
+          
+          <!-- Recently Played Section -->
+          <div class="homepage-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon">🎮</span>
+                Recently Played
+              </h2>
+              <button class="clear-history-btn" onclick="RecentlyPlayed.clear()">
+                Clear History
+              </button>
+            </div>
+            <div class="games-grid" id="recently-played-games">
+              <!-- Games will be inserted here by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Recently Added Section -->
+          <div class="homepage-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon">✨</span>
+                Recently Added
+              </h2>
+              <button class="view-all-btn" onclick="navigateToGames()">
+                View All Games
+              </button>
+            </div>
+            <div class="games-grid" id="recently-added-games">
+              <!-- Games will be inserted here by JavaScript -->
+            </div>
+          </div>
+
+        </div>
+
+        <div class="homepage-info-buttons">
+          <button id="creditsBtn" class="info-btn">Credits</button>
+          <div class="user-counter-container">
+            <div class="user-counter-content">
+              <span class="user-counter-text">
+                <span id="activeUsers"></span> users online
+              </span>
+              <span class="user-counter-pulse"></span>
+            </div>
+          </div>
+          <button id="updateLogBtn" class="info-btn">Update Log</button>
+        </div>
+      </div>
+
+      <div id="content-srch" class="content" style="display:none;">
+        <div class="search-iframe-container">
+          <iframe src="search.html" class="search-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-popups-to-escape-sandbox allow-top-navigation" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div id="content-gms" class="content" style="display:none;">
+        <h1>Gᾰmes</h1>
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search for gᾰmes..." />
+          <button id="searchBtn">Search</button>
+        </div>
+        <div id="game-list" class="game-grid"></div>
+      </div>
+
+      <div id="content-emulated" class="content" style="display:none;">
+        <h1>Emulated Gᾰmes</h1>
+        <p>THIS IS BETA!!!</p>
+        <div class="search-container">
+          <input type="text" id="searchEmulatedInput" placeholder="Search emulated gᾰmes..." />
+          <button id="searchEmulatedBtn">Search</button>
+        </div>
+        <div id="emulated-list" class="game-grid"></div>
+      </div>
+
+      <div id="content-about" class="content" style="display:none;">
+        <h2>About</h2>
+        <h1>Latest Note: [11/17/25]</h1>
+        <br>
+        <h3>This</h3>
+        <h3>Is</h3>
+        <h3>Terminated</h3>
+      </div>
+
+      <div id="content-aps" class="content" style="display:none;">
+        <h1>Shortcuts</h1>
+        <div id="app-list" class="app-grid"></div>
+        <button id="backToHomeApps">Back to Home</button>
+      </div>
+
+      <div id="content-settings" class="content" style="display:none;">
+        <h1>Settings</h1>
+        <div class="settings-tabs">
+          <button class="settings-tab-btn active" data-tab="cloaking">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 4c1.648 0 3 1.352 3 3v3H9V7c0-1.648 1.352-3 3-3zm5 6V7c0-2.752-2.248-5-5-5S7 4.248 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1zM6 12h12v8H6v-8z"></path>
+            </svg>
+            Cloaking
+          </button>
+          <button class="settings-tab-btn" data-tab="customization">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18.33 3.57s.27-.8-.31-1.36c-.53-.52-1.22-.24-1.22-.24-.61.3-5.76 3.47-7.67 5.57-.86.96-2.06 3.79-1.09 4.82.92.98 3.96-.17 4.79-1 2.06-2.06 5.21-7.17 5.5-7.79zM1.4 17.65c2.37-1.56 1.46-3.41 3.23-4.64.93-.65 2.22-.62 3.08.29.63.67.8 2.57-.16 3.46-1.57 1.45-4 1.55-6.15.89z"></path>
+            </svg>
+            Customization
+          </button>
+          <button class="settings-tab-btn" data-tab="misc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M14 3.2686C14 2.56797 13.432 2 12.7314 2H11.2686C10.568 2 10 2.56797 10 3.2686V3.2686C10 3.84745 9.60365 4.34302 9.0652 4.55546C8.97998 4.58908 8.89547 4.62413 8.81172 4.66056C8.2807 4.89156 7.64975 4.82144 7.24027 4.41197V4.41197C6.74474 3.91643 5.94132 3.91643 5.44579 4.41197L4.41187 5.44588C3.91632 5.94143 3.91632 6.74487 4.41187 7.24042V7.24042C4.82135 7.6499 4.89147 8.28086 4.66049 8.81189C4.62408 8.89559 4.58906 8.98004 4.55546 9.0652C4.34302 9.60365 3.84744 10 3.2686 10V10C2.56797 10 2 10.568 2 11.2686V12.7314C2 13.432 2.56797 14 3.2686 14V14C3.84744 14 4.34302 14.3963 4.55546 14.9348C4.58906 15.02 4.62408 15.1044 4.66049 15.1881C4.89148 15.7191 4.82135 16.3501 4.41187 16.7596V16.7596C3.91632 17.2551 3.91632 18.0586 4.41187 18.5541L5.44578 19.588C5.94132 20.0836 6.74474 20.0836 7.24028 19.588V19.588C7.64975 19.1786 8.28071 19.1084 8.81173 19.3394C8.89548 19.3759 8.97998 19.4109 9.0652 19.4445C9.60365 19.657 10 20.1526 10 20.7314V20.7314C10 21.432 10.568 22 11.2686 22H12.7314C13.432 22 14 21.432 14 20.7314V20.7314C14 20.1526 14.3963 19.657 14.9348 19.4445C15.02 19.4109 15.1045 19.3759 15.1882 19.3395C15.7192 19.1085 16.3501 19.1786 16.7595 19.5881V19.5881C17.255 20.0836 18.0584 20.0836 18.5539 19.5881L19.588 18.554C20.0835 18.0585 20.0835 17.2552 19.588 16.7597V16.7597C19.1785 16.3502 19.1084 15.7193 19.3394 15.1883C19.3759 15.1046 19.4109 15.02 19.4445 14.9348C19.657 14.3964 20.1526 14 20.7314 14V14C21.432 14 22 13.432 22 12.7314V11.2686C22 10.568 21.432 10 20.7314 10V10C20.1526 10 19.657 9.60365 19.4445 9.0652C19.4109 8.97996 19.3759 8.89544 19.3394 8.81166C19.1084 8.28068 19.1785 7.64977 19.588 7.24033V7.24033C20.0835 6.74483 20.0835 5.94147 19.588 5.44597L18.5539 4.41193C18.0584 3.91642 17.255 3.91642 16.7595 4.41193V4.41193C16.3501 4.82138 15.7192 4.8915 15.1882 4.66052C15.1045 4.6241 15.02 4.58907 14.9348 4.55546C14.3963 4.34302 14 3.84744 14 3.2686V3.2686Z"></path>
+            </svg>
+            Misc
+          </button>
+        </div>
+
+        <div class="settings-page-container">
+          <div class="settings-tab-content active" id="tab-cloaking">
+            <div class="settings-section">
+              <h3>Tab Cloaking</h3>
+              <div class="setting-item">
+                <label for="customTitle">Custom Title:</label>
+                <input type="text" id="customTitle" placeholder="e.g., Google" />
+              </div>
+              <div class="setting-item">
+                <label for="customFavicon">Custom Favicon URL:</label>
+                <input type="text" id="customFavicon" placeholder="e.g., https://google.com/favicon.ico" />
+              </div>
+              <div class="setting-item">
+                <label for="presetSelect">Presets:</label>
+                <select id="presetSelect">
+                  <option value="">-- Select Cloaking--</option>
+                  <option value="google">Google</option>
+                  <option value="classroom">Google Classroom</option>
+                  <option value="bing">Bing</option>
+                  <option value="nearpod">Nearpod</option>
+                  <option value="powerschool">PowerSchool</option>
+                  <option value="chrome">Chrome New Tab</option>
+                  <option value="edge">Edge New Tab</option>
+                </select>
+              </div>
+              <div class="setting-buttons">
+                <button id="applyBtn" class="btn-primary">Apply</button>
+                <button id="resetBtn" class="btn-secondary">Reset</button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Panic Button</h3>
+              <div class="setting-item">
+                <label for="hotkey-input">Panic Hotkey:</label>
+                <input type="text" id="hotkey-input" placeholder="Press a key" readonly />
+                <button id="change-hotkey-btn" class="btn-small">Change</button>
+              </div>
+              <div class="setting-item">
+                <label for="redirect-url-input">Redirect URL:</label>
+                <input type="text" id="redirect-url-input" placeholder="https://google.com" />
+                <button id="change-URL-btn" class="btn-small">Change</button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>About Blank</h3>
+              <div class="setting-item">
+                <label>
+                  <input type="checkbox" id="aboutBlankToggle" /> Enable About:Blank Cloaking
+                </label>
+                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                  When enabled, the site will open in an about:blank window to hide from browser history.
+                </p>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Anti Tab Close</h3>
+              <div class="setting-item">
+                <label>
+                  <input type="checkbox" id="antiTabCloseToggle" /> Prevent Accidental Tab Close
+                </label>
+                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                  Shows a confirmation text when trying to close the tab.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-tab-content" id="tab-customization">
+            <div class="settings-section">
+              <h3>Theme 🎨</h3>
+              <div class="setting-item">
+                <label for="themeSelect">Select Theme:</label>
+                <select id="themeSelect">
+                  <option value="original">Original (Dark Blue)</option>
+                  <option value="dark">Dark Theme</option>
+                  <option value="light">Light Theme</option>
+                  <option value="midnight">Midnight</option>
+                  <option value="ocean">Ocean</option>
+                  <option value="sunset">Sunset</option>
+                  <option value="forest">Forest</option>
+                  <option value="purple">Purple Dream</option>
+                  <option value="cyberpunk">Cyberpunk</option>
+                  <option value="matrix">Matrix</option>
+                  <option value="neon">Neon Lights</option>
+                  <option value="fire">Fire</option>
+                  <option value="ice">Ice</option>
+                  <option value="retro">Retro</option>
+                  <option value="Anzo">Exclusive: Anzo</option>
+                </select>
+              </div>
+              <p style="font-size: 12px; color: var(--text-color); opacity: 0.8; margin-top: 8px;">
+                ✨ Sidebar colors automatically match your selected theme!
+              </p>
+            </div>
+
+            <div class="settings-section">
+              <h3>Visual Effects</h3>
+              <div class="setting-item">
+                <label>
+                  <input type="checkbox" id="snowToggle" checked /> Enable Snow Effect
+                </label>
+                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                  Adds falling snow animation to the page.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-tab-content" id="tab-misc">
+            <div class="settings-section">
+              <h3>Debug Options</h3>
+              <div class="setting-item">
+                <label>
+                  <input type="checkbox" id="debugModeToggle" /> Enable Debug Mode
+                </label>
+                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                  Shows console logs and debug information in the browser console.
+                </p>
+              </div>
+              <div class="setting-item">
+                <button id="clearCacheBtn" class="btn-secondary">Clear Cache & Reload</button>
+                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                  Clears all stored settings and reloads the page.
+                </p>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>Contributors 🛠️</h3>
+              <div class="contributors-grid">
+                <div class="contributor-card">
+                  <div class="contributor-icon">👑</div>
+                  <div class="contributor-name">Az</div>
+                  <div class="contributor-role">Owner</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">👑</div>
+                  <div class="contributor-name">Joseluis</div>
+                  <div class="contributor-role">Co-Owner</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">🛠️</div>
+                  <div class="contributor-name">Michael</div>
+                  <div class="contributor-role">Developer</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">🛠️</div>
+                  <div class="contributor-name">Coding4Hours</div>
+                  <div class="contributor-role">Developer</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">🛠️</div>
+                  <div class="contributor-name">Jordan</div>
+                  <div class="contributor-role">Developer</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">🤔</div>
+                  <div class="contributor-name">Fabian</div>
+                  <div class="contributor-role">Some Random</div>
+                </div>
+                <div class="contributor-card">
+                  <div class="contributor-icon">💻</div>
+                  <div class="contributor-name">David</div>
+                  <div class="contributor-role">Developer Larp</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>About</h3>
+              <div class="about-info">
+                <p><strong>Relic Ultimate</strong></p>
+                <p>Version: 1.2.6</p>
+                <p>Latest Update: December 2025</p>
+                <br>
+                <p><strong>Latest Features:</strong></p>
+                <ul style="text-align: left; padding-left: 20px;">
+                  <li>Added a bunch new gᾰmes</li>
+                  <li>Revamped the <b>settings</b></li>
+                  <li>Fixed Icy Purple Head</li>
+                  <li>Updated Bacon May Die</li>
+                  <li>Fixed small patches</li>
+                  <li>Did some search changes</li>
+                  <li>✨ Added Daily Game feature</li>
+                </ul>
+                <br>
+                <p style="font-size: 12px; opacity: 0.7;">
+                  Created by: az,
+                </p>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3>System Information</h3>
+              <div class="system-info">
+                <p><strong>Browser:</strong> <span id="browserInfo">Loading...</span></p>
+                <p><strong>Platform:</strong> <span id="platformInfo">Loading...</span></p>
+                <p><strong>Screen:</strong> <span id="screenInfo">Loading...</span></p>
+                <p><strong>Storage Used:</strong> <span id="storageInfo">Loading...</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div id="game-display" class="content" style="display:none;">
+        <div class="game-play-area" id="game-play-area">
+          <div class="game-controls">
+            <button class="game-control-btn" id="refreshBtn" title="Refresh Game">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+            </button>
+            <button class="game-control-btn" id="fullscreenBtn" title="Fullscreen">
+<button class="game-control-btn" id="fullscreenBtn" title="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+            </button>
+          </div>
+          <iframe id="game-iframe" class="game-iframe" title="Game Display"></iframe>
+        </div>
+        <br />
+        <button id="backToHomeGame">Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="snow-container"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script src="others/assets/scripts/console.js"></script>
+  <script src="others/assets/scripts/gms.js"></script>
+  <script src="others/assets/scripts/stats.js"></script>
+  <script src="others/assets/scripts/recently-played.js"></script>
+  <script src="others/assets/scripts/recently-added.js"></script>
+  <script src="assets/scripts/firebase-config.js"></script>
+  <script src="assets/scripts/counter.js"></script>
+  <script src="public/javascript/daily.js"></script>
+  <script src="scripts.js"></script>
+  
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        const updateLogModal = document.getElementById('updateLogModal');
+        if (updateLogModal) {
+          updateLogModal.style.display = 'flex';
+          console.log('Update log modal displayed automatically');
+        }
+      }, 500);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('info-close')) {
+        const modalId = e.target.getAttribute('data-modal');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      if (e.target.classList.contains('info-modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+
+    const updateLogBtn = document.getElementById('updateLogBtn');
+    if (updateLogBtn) {
+      updateLogBtn.addEventListener('click', function() {
+        const updateLogModal = document.getElementById('updateLogModal');
+        if (updateLogModal) {
+          updateLogModal.style.display = 'flex';
+        }
+      });
+    }
+
+    const creditsBtn = document.getElementById('creditsBtn');
+    if (creditsBtn) {
+      creditsBtn.addEventListener('click', function() {
+        const creditsModal = document.getElementById('creditsModal');
+        if (creditsModal) {
+          creditsModal.style.display = 'flex';
+        }
+      });
+    }
+  </script>
+
+  <script>
+    console.log('Page loaded, checking for games data...');
+    setTimeout(() => {
+      console.log('Games available:', typeof games !== 'undefined' ? games.length : 'NOT LOADED');
+      console.log('Carousel track found:', {
+        top: !!document.getElementById('carousel-track-top')
+      });
+    }, 2000);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relic</title>
+  <link rel="icon" href="others/assets/relic.webp" />
+  <link rel="shortcut icon" href="others/assets/relic.webp" />
+  <script async defer src="./js/tabs.js" type="module"></script>
+  <link href="others/assets/css/tabs.css" rel="stylesheet" />
+  <script type="module" async defer>
+
+    import {
+      setWisp,
+      setProxy,
+      makeURL,
+      getProxied,
+      setFrames,
+      addressInput,
+      currentTab,
+      Tab
+    } from "./public/javascript/cat.mjs"
+
+    // --- INIT ---
+    const form = document.getElementById("form")
+    let search =
+      localStorage.getItem("search-engine") ||
+      "https://duckduckgo.com/?q=%s"
+    setProxy(localStorage.getItem("pr0xy") || "scram")
+
+    setWisp((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/wisp/");
+    async function autofill(url) {
+      const urlToLoad = makeURL(url, search)
+      const proxiedUrl = await getProxied(urlToLoad)
+      setTimeout(() => {
+
+        document.getElementById(`frame-${currentTab}`).src = proxiedUrl;
+      }, 200);
+    }
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const autofillUrl = params.get('autofill');
+      if (autofillUrl) {
+        autofill(autofillUrl);
+      }
+    } catch { }
+
+
+  //  setWisp("wss://anura.pro/");
+
+
+
+
+    // --- EVENTS ---
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault()
+
+      const urlToLoad = makeURL(addressInput.value, search)
+      const proxiedUrl = await getProxied(urlToLoad)
+
+      let currentFrame = document.getElementById(`frame-${currentTab}`);
+
+      currentFrame.src = proxiedUrl
+
+      if (currentFrame === document.getElementById(`frame-${currentTab}`)) {
+        addressInput.value = urlToLoad
+
+        if (urlToLoad == "newtab.html") {
+          addressInput.value = "Relic://newtab"
+        }
+
+      }
+    })
+
+
+
+    setFrames(document.getElementById("frames"));
+    new Tab();
+  </script>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+
+<body theme="classic">
+        <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({ pageLanguage: "en", layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL }, "google_translate_element");
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <div id="history-container" style="display:none;">
+    <button id="close-history" style="float:right;margin:10px;" aria-label="Close History" title="Close History">✕</button>
+    <input type="text" id="history-search" placeholder="Filter history...">
+    <ul id="history-list"></ul>
+    <button id="clear-history">Clear History</button>
+  </div>
+
+  <nav>
+    <div id="tabs"></div>
+    <button id="new-tab-btn" aria-label="New Tab" title="New Tab">
+
+      <i class='bx bx-plus'></i>
+    </button>
+  </nav>
+
+  <form id="form" align="center">
+    <a href="#" id="fullscreen-icon" class="fc nav-btn" onclick="historyBack();" title="goes back in iframe"><i
+        class='bx bx-chevron-left'></i></a>
+    <a href="#" id="fullscreen-icon" class="fc nav-btn" onclick="reload();" title="reloads iframe"><i
+        class="bx bx-refresh"></i></a>
+    <a href="#" id="fullscreen-icon" class="fc nav-btn" onclick="historyForward();" title="goes forward in iframe"><i
+        class='bx bx-chevron-right'></i></a>
+    <input id="address" type="text" placeholder="search the internet" class="search" autocomplete="off"
+      onfocus="this.select()" />
+    <a href="#" id="home-icon" class="fc" onclick="window.close();" title="closes the Relic tabs session"><i
+        class="bx bx-home"></i></a>
+    <a href="#" id="inspect-icon" class="fc" onclick="inspect();" title="gives you website inspect element"><i
+        class="bx bx-code-alt"></i></a>
+    <a href="#" id="fullscreen-icon" class="fc" onclick="full();" title="puts iframe in fullscreen"><i
+        class="bx bx-fullscreen"></i></a>
+    <a href="#" id="more-icon" class="fc" aria-haspopup="true" aria-expanded="false" aria-controls="more-menu"
+      role="button" title="More (dropdown)"><i class="bx bx-dots-vertical"></i></a>
+  </form>
+  <div id="more-menu" class="menu" role="menu">
+    <a href="#" onclick="copy();" role="menuitem">Clear Session</a>
+    <a href="#" onclick="registerSW();" role="menuitem">Register SW</a>
+    <div class="divider"></div>
+    <a href="#" id="toggle-history" role="menuitem">History</a>
+  </div>
+  <section id="frames"></section>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQ8CVXYBF9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "G-TQ8CVXYBF9");
+</script>
+  <script>
+
+
+    function inspect() {
+      const idFromGlobal = (typeof currentTab !== 'undefined') ?
+        `frame-${currentTab}` :
+        (window.currentTab ? `frame-${window.currentTab}` : null);
+
+      let activeFrame = idFromGlobal ? document.getElementById(idFromGlobal) : null;
+      if (!activeFrame) activeFrame = document.querySelector('iframe[id^="frame-"]');
+      if (!activeFrame) return alert("No frame found.");
+
+      const urlInput = document.querySelector('#urlbar, #searchBar, input[type="text"]');
+      if (urlInput && urlInput.value.includes("newtab.html")) {
+        return alert("ts is the default page vro u cant be serious.");
+      }
+
+      try {
+        void activeFrame.contentWindow.document;
+      } catch {
+        return alert("Cross-origin frame, cannot inject.");
+      }
+
+      const code = `
+    (function(){
+      if (window.__erudaInjected) {
+        try { eruda.destroy(); } catch(e){}
+        document.querySelectorAll('script[src*="eruda"]').forEach(s=>s.remove());
+        window.__erudaInjected = false;
+      } else {
+        function load(src,next){
+          var s=document.createElement('script');
+          s.src=src;
+          s.onload=()=>next(true);
+          s.onerror=()=>next(false);
+          document.body.appendChild(s);
+        }
+        function initAndShow() {
+          eruda.init();
+          eruda.show();
+        }
+        load('https://cdn.jsdelivr.net/npm/eruda', ok=>{
+          if(!ok){
+            load('https://cdn.statically.io/gh/liriliri/eruda/master/eruda.min.js', ok2=>{
+              if(!ok2){
+                load('https://rawgit.com/liriliri/eruda/master/eruda.min.js', initAndShow);
+              } else initAndShow();
+            });
+          } else initAndShow();
+        });
+        window.__erudaInjected=true;
+      }
+    })();
+  `;
+      activeFrame.contentWindow.eval(code);
+    }
+  </script>
+  <script async defer>
+    function full() {
+      const activeFrame = document.querySelector('iframe[id^="frame-"]:not(.hidden)');
+      if (!activeFrame) return;
+      if (!document.fullscreenElement) {
+        activeFrame.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+</body>
+<script src="/assets/scripts/index.js"></script>
+<script>
+  function reload() {
+    var iframe = document.querySelector("iframe");
+    iframe.contentWindow.location.reload();
+  }
+
+  function historyBack() {
+    var iframe = document.querySelector("iframe");
+    iframe.contentWindow.history.back();
+  }
+
+  function historyForward() {
+    var iframe = document.querySelector("iframe");
+    iframe.contentWindow.history.forward();
+  }
+</script>
+<script>
+  function copy() {
+    const url = window.location.origin;
+    const text = "chrome://settings/content/all?searchSubpage=" + url;
+    navigator.clipboard.writeText(text).then(() => {
+      alert(text + " is now in your clipboard. Please paste the URL in the search bar in a new tab.");
+    });
+  }
+</script>
+<script>
+if (new URLSearchParams(location.search).has("goback")) {
+  const screen = document.createElement("div");
+  Object.assign(screen.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#000",
+    color: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Inter, sans-serif",
+    fontSize: "22px",
+    textAlign: "center",
+  });
+  screen.textContent = "Registering...";
+  document.body.appendChild(screen);
+
+  setTimeout(() => {
+    screen.textContent = "Success! Closing window...";
+    setTimeout(() => window.close(), 3000);
+  }, 8000);
+}
+</script>
+<script>
+  const paramss = new URLSearchParams(location.search);
+  if (paramss.has("autofill")) {
+    const messages = [
+      "Wait up twin ❤‍🩹",
+      "Frogie's Arcade got nothing on this 🥀",
+      "Szvy (Elliot Eugene Schanock), is a diddyblud and has CSAM of his ex. 🪫",
+      "Fuckass gσguardian 💔",
+      "​🇸​​🇼​​🇦​​🇲​​🇵​ ​🇮​​🇿​​🇿​​🇴​",
+      "'Ay Carti, I need that Back to the Future Carti I need that full alien Carti I need that beep, beep, beep, beep Extra terrestrial Carti, you know Hmm, just like that, Carti, you know Hmm, just like that, Cart' - Kendrick Lamar",
+      "ＢＡＲＢＥＲＳＨＯＰ ＨＡＩＲＣＵＴ ＴＨＡＴ ＣＯＳＴＳ Ａ ＱＵＡＲＴＥＲ",
+      "Classroom6x < Jordan's Math Work",
+      "Quasar > Jordan's Math Work > Truffled > Frogie's arcade > Space > Szvy (Elliot Eugene Schanock) central",
+      "All roads lead to rome. 🐇⌚",
+      "'Bring him to the mechanism.'",
+      "All roads lead to khaby lame mechanism.",
+      "Use this during or after school!",
+      "We ALL love the NPA",
+      "top 10 reasons why i hate noobs!",
+      "great meme reset jan 1 2026 mark your calendars.",
+      "All unblocked games sites lead to jordan's math work. Time is running out.",
+      "#NowGGIsMoneyHungry",
+      "We ALL love bog, bread, frogiee and corbin",
+      "Elliot Eugene Schanock lives at 815 monique lane phonk. He has CSAM of his ex-girlfriend.",
+      "'Now THAT's what i call a distraction from the epstien files!'",
+      "Release the files, orange man.",
+      "Trump saw bill's big beautiful bill",
+      "SCHYEAH",
+      "TOO MANY CHAINS YEAH LIKE AN OLYMPIAN",
+      "IT'S LIT!",
+      "STRAIGHT UP!",
+      "WHAT'S HAPPENIN'!",
+      "wobbleitwiggleitwobbleitwiggleitwobbleitwiggleitwoaaaaaaah",
+      "i am the one who knocks",
+      "⁶🤷⁷"
+    ];
+
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(0,0,0,0.7)",
+      color: "#fff",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: "24px",
+      zIndex: "99999999999999999",
+      opacity: 0,
+      transition: "opacity 0.5s ease-in-out"
+    });
+
+    const messageContainer = document.createElement("div");
+    Object.assign(messageContainer.style, {
+      marginBottom: "30px",
+      opacity: 0,
+      transform: "translateY(20px)",
+      transition: "opacity 0.8s ease-in-out 0.3s, transform 0.8s ease-in-out 0.3s",
+      background: "transparent"
+    });
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    messageContainer.textContent = randomMessage;
+
+    const dotsContainer = document.createElement("div");
+    Object.assign(dotsContainer.style, {
+      display: "flex",
+      gap: "8px",
+      alignItems: "center",
+      opacity: 0,
+      transform: "translateY(20px)",
+      transition: "opacity 0.8s ease-in-out 0.6s, transform 0.8s ease-in-out 0.6s",
+      background: "transparent"
+    });
+
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement("div");
+      Object.assign(dot.style, {
+        width: "12px",
+        height: "12px",
+        backgroundColor: "var(--txtcolor)",
+        borderRadius: "50%",
+        animation: `loadingDot 1.4s ease-in-out infinite both`,
+        animationDelay: `${i * 0.16}s`
+      });
+      dotsContainer.appendChild(dot);
+    }
+
+    const style = document.createElement("style");
+    style.textContent = `
+        @keyframes loadingDot {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    overlay.appendChild(messageContainer);
+    overlay.appendChild(dotsContainer);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+      overlay.style.opacity = 1;
+
+      setTimeout(() => {
+        messageContainer.style.opacity = 1;
+        messageContainer.style.transform = "translateY(0)";
+      }, 100);
+
+      setTimeout(() => {
+        dotsContainer.style.opacity = 1;
+        dotsContainer.style.transform = "translateY(0)";
+      }, 400);
+    });
+
+    setTimeout(() => {
+      overlay.style.animation = "fadeOut 0.5s ease-in-out forwards";
+      setTimeout(() => {
+        overlay.remove();
+        style.remove();
+      }, 500);
+    }, 5500);
+  }
+</script>
+<script>
+  const moreIcon = document.getElementById('more-icon');
+  const menu = document.getElementById('more-menu');
+
+  moreIcon.addEventListener('click', e => {
+    e.preventDefault();
+    if (!menu.classList.contains('open')) {
+      menu.classList.add('open');
+      const rect = moreIcon.getBoundingClientRect();
+      const menuWidth = menu.offsetWidth;
+      const menuHeight = menu.offsetHeight;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      let left = rect.left + window.scrollX;
+      if (left + menuWidth > viewportWidth - 10) left = viewportWidth - menuWidth - 10;
+      let top = rect.bottom + window.scrollY;
+      if (top + menuHeight > viewportHeight - 10) top = rect.top + window.scrollY - menuHeight;
+      menu.style.top = top + 'px';
+      menu.style.left = left + 'px';
+    } else {
+      menu.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!menu.contains(e.target) && e.target !== moreIcon) menu.classList.remove('open');
+  });
+</script>
+<script src="/assets/scripts/index.js"></script>
+<script>
+  let isLeavePopupEnabled = JSON.parse(localStorage.getItem('leavePopupEnabled'));
+  if (isLeavePopupEnabled === null) isLeavePopupEnabled = false;
+
+  window.addEventListener('beforeunload', e => {
+    if (isLeavePopupEnabled) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  const toggleLeavePopup = document.getElementById('toggleLeavePopup');
+  if (toggleLeavePopup) {
+    toggleLeavePopup.checked = isLeavePopupEnabled;
+    toggleLeavePopup.addEventListener('change', () => {
+      isLeavePopupEnabled = !isLeavePopupEnabled;
+      localStorage.setItem('leavePopupEnabled', JSON.stringify(isLeavePopupEnabled));
+      alert(isLeavePopupEnabled ? 'Leave Site Popup Enabled' : 'Leave Site Popup Disabled');
+    });
+  }
+</script>
+<script>
+const maxHistory = 1000;
+const input = document.getElementById('address');
+const historyContainer = document.getElementById('history-container');
+const historyList = document.getElementById('history-list');
+const historySearch = document.getElementById('history-search');
+const toggleBtn = document.getElementById('toggle-history');
+const clearBtn = document.getElementById('clear-history');
+const closeBtn = document.getElementById('close-history');
+
+function getHistory() {
+  return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+}
+
+function saveHistory(term) {
+  if (!term) return;
+  let history = getHistory();
+  history = history.filter(item => item.term !== term);
+  let url = term.startsWith('http') ? term : `https://duckduckgo.com/?q=${encodeURIComponent(term)}`;
+  history.unshift({ term, title: term, url });
+  if (history.length > maxHistory) history.pop();
+  localStorage.setItem('searchHistory', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory(filter = '') {
+  const history = getHistory().filter(item =>
+    item.term.toLowerCase().includes(filter.toLowerCase())
+  );
+  historyList.innerHTML = '';
+  history.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.style.cursor = 'pointer';
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.gap = '8px';
+    li.style.opacity = 0;
+    li.style.transform = 'translateY(10px)';
+    li.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    li.style.backgroundColor = 'transparent';
+
+    const img = document.createElement('img');
+    img.src = `https://www.google.com/s2/favicons?domain=${item.url}`;
+    img.width = 16;
+    img.height = 16;
+
+    const text = document.createElement('span');
+    text.textContent = `${item.title} (${item.url})`;
+    text.style.backgroundColor = 'transparent';
+
+    li.appendChild(img);
+    li.appendChild(text);
+    li.onclick = () => {
+      input.value = item.term;
+      window.location.href = `/active/index.html?autofill=${encodeURIComponent(item.term)}`;
+      historyContainer.style.display = 'none';
+    };
+
+    historyList.appendChild(li);
+
+    setTimeout(() => {
+      li.style.opacity = 1;
+      li.style.transform = 'translateY(0)';
+    }, index * 50);
+  });
+}
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveHistory(input.value);
+});
+
+historySearch.addEventListener('input', () => {
+  renderHistory(historySearch.value);
+});
+
+toggleBtn.addEventListener('click', () => {
+  historyContainer.style.display =
+    historyContainer.style.display === 'none' ? 'block' : 'none';
+  historySearch.value = '';
+  renderHistory();
+});
+
+closeBtn.addEventListener('click', () => {
+  historyContainer.style.display = 'none';
+});
+
+clearBtn.addEventListener('click', () => {
+  if (confirm('Clear all history?')) {
+    localStorage.removeItem('searchHistory');
+    renderHistory();
+  }
+});
+
+document.addEventListener('click', e => {
+  if (!historyContainer.contains(e.target) && e.target !== toggleBtn) {
+    historyContainer.style.display = 'none';
+  }
+});
+</script>
+<script>
+  if (window.location.search.includes("&alert=true")) {
+  alert("If the search error says 'there are no bare clients' then click the URL in our custom tabs and press enter! If you're on g^mes, some of them may take a long time to load due to their LARGE amount of assets! Be VERY patient.");
+}
+</script>
+</html>
