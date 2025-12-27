@@ -763,6 +763,19 @@
       navigator.serviceWorker.register("/sw.js");
     } catch (e) { console.error("scramjet failed to initialize;", e); }
     const connection = new BareMux.BareMuxConnection("/bareworker.js");
+
+    // After: const scramjet = new ScramjetController({...});
+// Add this:
+
+const originalFetch = window.fetch;
+window.fetch = function(...args) {
+  console.log('Fetch called with:', args);
+  if (args[1] && args[1].headers) {
+    console.log('Headers type:', typeof args[1].headers);
+    console.log('Headers:', args[1].headers);
+  }
+  return originalFetch.apply(this, args);
+};
     
     function getWispUrl() {
       const wisp = document.getElementById("websocket").value.trim();
