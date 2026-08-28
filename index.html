@@ -1,588 +1,1120 @@
-<!doctype html>
+<!-- index.html -->
+<!doctype html> 
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relic</title>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relic</title>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/bare-mux@2/dist/index.js"></script>
-  
-  <link rel="icon" href="others/assets/relic.webp" />
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="stylesheet" href="./others/assets/css/themes.css" />
-  <link rel="stylesheet" href="./others/assets/css/sidebar.css" />
-  <link rel="stylesheet" href="./others/assets/css/console.css" />
-  <link rel="stylesheet" href="./others/assets/scripts/homepage/css/homepage.css" />
-  <link rel="stylesheet" href="./others/assets/css/daily.css" />
-  <link rel="stylesheet" href="./others/assets/css/homepage-sections.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <script
+      defer
+      data-domain="relic"
+      src="https://stats.senty.com.au/js/script.outbound-links.pageview-props.tagged-events.js"
+    ></script>
+    <script>
+      window.plausible =
+        window.plausible ||
+        function () {
+          (window.plausible.q = window.plausible.q || []).push(arguments);
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/bare-mux@2/dist/index.js"></script>
 
-  <style>
-    .search-iframe-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 100px);
-      background: var(--bg-color, #000001);
-      border-radius: 12px;
-      overflow: hidden;
-      margin: 20px;
-    }
+    <link rel="icon" href="others/assets/relic.webp" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./others/assets/css/themes.css" />
+    <link rel="stylesheet" href="./others/assets/css/sidebar.css" />
+    <link rel="stylesheet" href="./others/assets/css/console.css" />
+    <link rel="stylesheet" href="./others/assets/scripts/homepage/css/homepage.css" />
+    <link rel="stylesheet" href="./others/assets/css/daily.css" />
+    <link rel="stylesheet" href="./others/assets/css/homepage-sections.css" />
 
-    .search-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
-</head>
+    <style>
+      .home-wordmark,
+      .home-nav-pill,
+      .home-search-input,
+      .home-search-input::placeholder,
+      .home-suggestion-item,
+      .home-suggestion-empty,
+      .home-suggestion-tag,
+      .home-suggestion-label,
+      .hrp-label,
+      .hrp-name,
+      .hrp-clear-btn,
+      .home-online-users,
+      .online-count,
+      .online-label,
+      .info-btuon {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+      }
 
-<body>
+      .search-iframe-container {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 78px;
+        right: 0;
+        bottom: 0;
+        background: var(--bg-color);
+        border-radius: 0;
+        overflow: hidden;
+        margin: 0;
+        z-index: 10;
+      }
 
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logoforanzoml"> <link rel="icon" href="others/assets/relic.webp" /></div>
+      .search-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        flex: 1;
+      }
+
+      .home-search-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 85vh;
+        padding: 48px 24px 100px;
+        gap: 28px;
+      }
+
+      .home-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+      }
+
+      .home-logo-img {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .home-wordmark {
+        font-size: 42px;
+        font-weight: 800;
+        color: var(--text-color);
+        letter-spacing: -1px;
+      }
+
+      .home-search-bar-wrap {
+        width: 100%;
+        max-width: 540px;
+        position: relative;
+      }
+
+      .home-search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+        border-radius: 14px;
+        padding: 0 14px;
+        transition: border-color 0.15s;
+      }
+
+      .home-search-bar:focus-within {
+        border-color: var(--accent-color);
+      }
+
+      .home-search-icon {
+        width: 16px; height: 16px;
+        color: var(--text-color);
+        opacity: 0.35;
+        flex-shrink: 0;
+      }
+
+      .home-search-input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: var(--text-color);
+        padding: 14px 0;
+      }
+
+      .home-search-input::placeholder {
+        color: var(--text-color);
+        opacity: 0.28;
+      }
+
+      .home-search-clear {
+        background: none; border: none; cursor: pointer; padding: 4px;
+        color: var(--text-color); opacity: 0.3; display: none; flex-shrink: 0;
+        transition: opacity 0.12s;
+      }
+      .home-search-clear:hover { opacity: 0.7; }
+      .home-search-clear.visible { display: flex; }
+      .home-search-clear svg { width: 14px; height: 14px; }
+
+      .home-search-suggestions {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0; right: 0;
+        background: var(--bg-secondary);
+        border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+        border-radius: 14px;
+        overflow: hidden;
+        display: none;
+        z-index: 100;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      }
+      .home-search-suggestions.open { display: block; }
+
+      .home-suggestion-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: var(--text-color);
+        transition: background 0.1s;
+      }
+      .home-suggestion-item:hover,
+      .home-suggestion-item.active { background: var(--accent-color); color: #fff; }
+      .home-suggestion-item svg { width: 14px; height: 14px; opacity: 0.45; flex-shrink: 0; }
+      .home-suggestion-item:hover svg, .home-suggestion-item.active svg { opacity: 1; }
+      .home-suggestion-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .home-suggestion-tag { font-size: 10px; opacity: 0.4; text-transform: uppercase; letter-spacing: 0.4px; }
+      .home-suggestion-empty { padding: 18px; text-align: center; font-size: 13px; color: var(--text-color); opacity: 0.38; font-family: 'Inter', sans-serif; }
+
+      .home-suggestion-web {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: var(--text-color);
+        border-top: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+        transition: background 0.1s;
+        opacity: 0.7;
+      }
+      .home-suggestion-web:hover { background: var(--accent-color); color: #fff; opacity: 1; }
+      .home-suggestion-web svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+      .home-nav-row {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .home-nav-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 26px;
+        border-radius: 14px;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--glass-border);
+        background: var(--bg-secondary);
+        backdrop-filter: blur(12px);
+        color: var(--text-color);
+        opacity: 1;
+        transition: all 0.2s ease;
+      }
+
+      .home-nav-pill:hover {
+        transform: translateY(-3px);
+        background: var(--hover-bg);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+      }
+
+      .home-nav-pill svg { width: 13px; height: 13px; }
+
+      #homeRecentlyPlayed {
+        width: 100%;
+        max-width: 540px;
+      }
+
+      .hrp-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .hrp-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--text-color);
+        opacity: 0.38;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        flex: 1;
+      }
+
+      .hrp-line {
+        flex: 1;
+        height: 1px;
+        background: var(--glass-border, rgba(255,255,255,0.08));
+      }
+
+      .hrp-clear-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-size: 10px;
+        color: var(--text-color);
+        opacity: 0.25;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: opacity 0.12s;
+      }
+      .hrp-clear-btn:hover { opacity: 0.6; }
+
+      #homeRecentStrip {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      #homeRecentStrip::-webkit-scrollbar { display: none; }
+
+      .hrp-thumb {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .hrp-img-wrap {
+        position: relative;
+        width: 72px; height: 72px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+        background: var(--bg-secondary);
+        transition: transform 0.15s, border-color 0.15s;
+      }
+
+      .hrp-thumb:hover .hrp-img-wrap {
+        transform: translateY(-3px);
+        border-color: var(--accent-color);
+      }
+
+      .hrp-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+      .hrp-fallback {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Inter', sans-serif;
+        font-size: 26px; font-weight: 800;
+        color: var(--accent-color);
+        background: var(--bg-secondary);
+      }
+
+      .hrp-play-overlay {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .hrp-thumb:hover .hrp-play-overlay { opacity: 1; }
+
+      .hrp-name {
+        font-family: 'Inter', sans-serif;
+        font-size: 10px;
+        color: var(--text-color);
+        opacity: 0.4;
+        text-align: center;
+        width: 72px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transition: opacity 0.12s;
+      }
+      .hrp-thumb:hover .hrp-name { opacity: 0.85; }
+
+      /* bottom bar */
+      .home-bottom-btns {
+        position: fixed;
+        bottom: 18px;
+        left: 98px;
+        right: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        pointer-events: none;
+        z-index: 50;
+      }
+
+      .home-bottom-btns .info-btuon { pointer-events: all; }
+      .home-bottom-btns .home-online-users { pointer-events: all; }
+
+      .home-online-users {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-color);
+        opacity: 1;
+        padding: 12px 26px;
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        background: var(--bg-secondary);
+        backdrop-filter: blur(12px);
+        user-select: none;
+        transition: all 0.2s ease;
+      }
+
+      .home-online-users:hover {
+        transform: translateY(-3px);
+        background: var(--hover-bg);
+        border-color: var(--accent-color);
+      }
+
+      .online-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #4ade80;
+        flex-shrink: 0;
+      }
+
+      .online-count { font-weight: 500; color: var(--text-color); opacity: 1; }
+      .online-label { opacity: 0.6; }
+
+      @media (max-width: 768px) {
+        .home-wordmark { font-size: 18px; }
+        .home-logo-img { width: 36px; height: 36px; }
+      }
+
+      @media (max-width: 480px) {
+        .home-search-page { padding: 32px 14px 90px; gap: 22px; }
+      }
+    </style>
+  </head>
+
+    <div class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" id="homeLink" data-page="home" title="Home">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Hσme</span>
+        </a>
+        <a href="#" class="sidebar-link" id="gameLink" data-page="games" title="gᾰmes">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="2 12 22 12"></polyline>
+            <polyline points="7 7 7 22"></polyline>
+            <polyline points="17 7 17 22"></polyline>
+          </svg>
+          <span>Gᾰmes</span>
+        </a>
+        <a href="#" class="sidebar-link" id="appsLink" data-page="apps" title="Shortcuts">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Shσrtcuts</span>
+        </a>
+        <a href="#" class="sidebar-link" id="Emulink" data-page="emulated" title="Emulated">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12" y2="18"></line>
+          </svg>
+          <span>Emulated</span>
+        </a>
+        <a href="/public/media/movies-2.html" class="sidebar-link" id="mediaLink" data-page="media" title="Media">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 7l-7 5 7 5V7z"></path>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          <span>Mediᾰ</span>
+        </a>
+        <a href="#" class="sidebar-link" id="searchLink" data-page="search" title="Search">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <span>Seᾰrch</span>
+        </a>
+        <div class="sidebar-divider"></div>
+
+        <a href="#" class="sidebar-link" id="settingsLink" data-page="settings" title="Settings">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Settings</span>
+        </a>
+      </nav>
     </div>
-    <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link active" id="homeLink" data-page="home" title="Home">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span>Hσme</span>
-      </a>
-      <a href="#" class="sidebar-link" id="gameLink" data-page="games" title="Games">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
-          <polyline points="2 12 22 12"></polyline>
-          <polyline points="7 7 7 22"></polyline>
-          <polyline points="17 7 17 22"></polyline>
-        </svg>
-        <span>Gᾰmes</span>
-      </a>
-      <a href="#" class="sidebar-link" id="emulatedLink" data-page="emulated" title="Emulated Games">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-          <line x1="12" y1="18" x2="12" y2="18"></line>
-        </svg>
-        <span>Emulated</span>
-      </a>
-      <a href="#" class="sidebar-link" id="searchLink" data-page="search" title="Search">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-        <span>Search</span>
-      </a>
-      <a href="#" class="sidebar-link" id="appsLink" data-page="apps" title="Shortcuts">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7"></rect>
-          <rect x="14" y="3" width="7" height="7"></rect>
-          <rect x="14" y="14" width="7" height="7"></rect>
-          <rect x="3" y="14" width="7" height="7"></rect>
-        </svg>
-        <span>Shortcuts</span>
-      </a>
-      <a href="#" class="sidebar-link" id="settingsLink" data-page="settings" title="Settings">
-        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-        <span>Settings</span>
-      </a>
-    </nav>
-  </div>
 
-  <div class="main-content">
-    <div id="creditsModal" class="info-modal">
-      <div class="info-modal-content">
-        <span class="info-close" data-modal="creditsModal">&times;</span>
-        <h2>Credits</h2>
-        <div class="info-modal-body">
-          <p><strong>Created by:</strong></p>
-          <ul>
-            <li>Aye-zee</li>
-            <li>Jordan</li>
-            <li>Devin</li>
-            <li>Aydenou</li>
-            <li>Coding4Hours</li>
-          </ul>
-          <p><strong>Credits</strong></p>
-          <ul>
-            <li><a href="https://www.galaxyverse.org/" target="_blank" rel="noopener noreferrer">GalaxyVerse</a></li>
-            <li><a href="https://github.com/JustJxrdanWasDefinetlyTaken" target="_blank" rel="noopener noreferrer">Jordan's Projects</a></li>
-            <li><a href="https://gn-math.dev/" target="_blank" rel="noopener noreferrer">gn-math for some gᾰmes</a></li>
-            <li><p>Aydenou</p></li>
-          </ul>
-          <p><strong>Contributors:</strong></p>
-          <ul>
-            <li>Michael</li>
-            <li>David</li>
-            <li>Dariel</li>
-            <li>Joseluis</li>
-            <li>Fabian</li>
-          </ul>
-          <p><strong>Project Info:</strong></p>
-          <ul>
-            <li>Best development team was here</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <div class="main-content">
 
-    <div id="updateLogModal" class="info-modal">
-      <div class="info-modal-content">
-        <span class="info-close" data-modal="updateLogModal">&times;</span>
-        <h2>Update Log V1.2.6</h2>
-        <div class="info-modal-body">
-          <ul>
-            <li>Added a bunch new gᾰmes</li>
-            <li>Revamped the <b>settings</b></li>
-            <li>Fixed Icy Purple Head</li>
-            <li>Updated Bacon May Die</li>
-            <li>Fixed small patches</li>
-            <li>Did some search changes</li>
-            <li>Search styles are updated</li>
-            <li>✨ <b>NEW:</b> Daily Game feature!</li>
-          </ul>
-          <h4>Coming Soon</h4>
-          <ul>
-            <li>More gᾰmes</li>
-            <li>Netflix</li>
-            <li>Spotify</li>
-            <li>More features with yxorp</li>
-
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <!-- Homepageof the twebsite  -->
-      <div id="content-home" class="content">
-        <div class="carousel-wrapper">
-          <div class="games-carousel">
-            <div class="carousel-track scroll-right-to-left" id="carousel-track-top"></div>
+      <!-- MODALS -->
+      <div id="creditsModal" class="info-modal">
+        <div class="info-modal-content">
+          <span class="info-close" data-modal="creditsModal">&times;</span>
+          <h2>Credits</h2>
+          <div class="info-modal-body">
+            <p><strong>Created by:</strong></p>
+            <ul>
+              <li>iizent</li><li>iimilo</li><li>iianzo</li><li>jordan</li><li>rus</li>
+            </ul>
+            <p><strong>Credits</strong></p>
+            <ul>
+              <li><a href="https://www.galaxyverse.org/" target="_blank" rel="noopener noreferrer">Successor to GalaxyVerse</a></li>
+              <li><a href="https://github.com/JustJxrdanWasDefinetlyTaken" target="_blank" rel="noopener noreferrer">Jordan's Projects</a></li>
+              <li><a href="https://ruslan.rocks/" target="_blank" rel="noopener noreferrer">Rus</a></li>
+              <li><a href="https://gn-math.dev/" target="_blank" rel="noopener noreferrer">gn-math for some gᾰmes</a></li>
+            </ul>
+            <p><strong>Contributors:</strong></p>
+            <ul>
+              <li>Rus</li><li>Michael</li><li>David</li><li>Dariel</li><li>Joseluis</li><li>Damian</li>
+            </ul>
+            <p><strong>Name shouts:</strong></p>
+            <ul>
+              <li>David</li><li>Michael</li><li>Saul</li><li>Pablo</li><li>Enrique</li><li>Nik</li>
+            </ul>
           </div>
         </div>
+      </div>
 
+      <div id="updlogmodule" class="info-modal">
+        <div class="info-modal-content">
+          <span class="info-close" data-modal="updlogmodule">&times;</span>
+          <h2>Update Log | 1.3.1</h2>
+          <div class="info-modal-body">
+            <ul>
+              <li><b>📢ADDED: </b>More application</li>
+            </ul>
+            <h4>Coming Soon</h4>
+            <ul>
+              <li><b>✨COMING SOON: </b>Some better features</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-        <div class="homepage-sections">
-          
-          <!-- Recently Played Section -->
-          <div class="homepage-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <span class="section-icon">🎮</span>
-                Recently Played
-              </h2>
-              <button class="clear-history-btn" onclick="RecentlyPlayed.clear()">
-                Clear History
+      <div class="container">
+
+        <!-- ═══ HOME PAGE ═══ -->
+        <div id="content-home" class="content">
+          <div class="home-search-page">
+
+            <!-- Logo -->
+            <div class="home-logo-area">
+              <span class="home-wordmark">Relic</span>
+            </div>
+
+            <!-- Search -->
+            <div class="home-search-bar-wrap">
+              <div class="home-search-bar">
+                <svg class="home-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="homeSearchInput" class="home-search-input" placeholder="search gᾰmes, apps, or anything..." autocomplete="off" />
+                <button class="home-search-clear" id="homeSearchClear" title="Clear">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div class="home-search-suggestions" id="homeSearchSuggestions"></div>
+            </div>
+
+            <!-- Quick nav -->
+            <div class="home-nav-row">
+              <button class="home-nav-pill" onclick="document.getElementById('gameLink').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="2 12 22 12"/><polyline points="7 7 7 22"/><polyline points="17 7 17 22"/></svg>
+                Games
+              </button>
+              <button class="home-nav-pill" onclick="document.getElementById('appsLink').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Shortcuts
+              </button>
+              <button class="home-nav-pill" onclick="document.getElementById('searchLink').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Browse Web
+              </button>
+              <button class="home-nav-pill" onclick="document.getElementById('mediaLink').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Media
+              </button>
+              <button class="home-nav-pill" onclick="document.getElementById('Emulink').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+                Emulated
               </button>
             </div>
-            <div class="games-grid" id="recently-played-games">
-              <!-- Games will be inserted here by JavaScript -->
+
+            <!-- Bottom buttons -->
+            <div class="home-bottom-btns">
+              <button id="creditsbtuon" class="info-btuon">Credits</button>
+              <div class="home-online-users" id="homeOnlineUsers">
+                <span class="online-dot"></span>
+                <span class="online-count" id="onlineCount">—</span>
+                <span class="online-label">online</span>
+              </div>
+              <button id="updateLogbtuon" class="info-btuon">Update Log</button>
             </div>
           </div>
+        </div>
 
-          <!-- Recently Added Section -->
-          <div class="homepage-section">
-            <div class="section-header">
-              <h2 class="section-title">
-                <span class="section-icon">✨</span>
-                Recently Added
-              </h2>
-              <button class="view-all-btn" onclick="navigateToGames()">
-                View All Games
+        <div id="content-srch" class="content" style="display: none">
+          <div class="search-iframe-container">
+            <iframe data-src="/static/index.html" class="search-iframe" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <div id="content-media" class="content" style="display: none">
+          <div class="search-iframe-container">
+            <iframe data-src="/public/media/movies-2.html" class="search-iframe" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <div id="content-gms" class="content" style="display: none">
+          <h1>Gᾰmes</h1>
+          <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search 300+ gᾰmes..." />
+            <button id="searchbtuon">Search</button>
+          </div>
+          <div id="game-list" class="game-grid"></div>
+        </div>
+
+        <div id="content-emulated" class="content" style="display: none">
+          <h1>Emulated Gᾰmes</h1>
+          <p>THIS IS BETA!!!</p>
+          <div class="search-container">
+            <input type="text" id="searchEmulatedInput" placeholder="Search emulated gᾰmes..." />
+            <button id="searchEmulatedbtuon">Search</button>
+          </div>
+          <div id="emulated-list" class="game-grid"></div>
+        </div>
+
+        <div id="contentscrapped" class="content" style="display: none">
+          <h2>Aout</h2>
+          <h1>Latest Note: [11/17/25]</h1>
+          <br />
+          <h3>This</h3><h3>Is</h3><h3>Terminated</h3>
+        </div>
+
+        <div id="content-aps" class="content" style="display: none">
+          <h1>Shortcuts</h1>
+          <div class="search-container">
+            <input type="text" id="searchAppsInput" placeholder="Search shortcuts..." />
+            <button id="searchAppsbtuon">Search</button>
+          </div>
+          <div id="app-list" class="app-grid"></div>
+          <button id="backToHomeApps">Back to Home</button>
+        </div>
+
+        <div id="content-settings" class="content" style="display: none">
+          <h1>Settings</h1>
+          <div class="settings-tabs">
+            <button class="settingstab active" data-tab="customization">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18.33 3.57s.27-.8-.31-1.36c-.53-.52-1.22-.24-1.22-.24-.61.3-5.76 3.47-7.67 5.57-.86.96-2.06 3.79-1.09 4.82.92.98 3.96-.17 4.79-1 2.06-2.06 5.21-7.17 5.5-7.79zM1.4 17.65c2.37-1.56 1.46-3.41 3.23-4.64.93-.65 2.22-.62 3.08.29.63.67.8 2.57-.16 3.46-1.57 1.45-4 1.55-6.15.89z"></path>
+              </svg>
+              Customization
+            </button>
+            <button class="settingstab" data-tab="misc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M14 3.2686C14 2.56797 13.432 2 12.7314 2H11.2686C10.568 2 10 2.56797 10 3.2686V3.2686C10 3.84745 9.60365 4.34302 9.0652 4.55546C8.97998 4.58908 8.89547 4.62413 8.81172 4.66056C8.2807 4.89156 7.64975 4.82144 7.24027 4.41197V4.41197C6.74474 3.91643 5.94132 3.91643 5.44579 4.41197L4.41187 5.44588C3.91632 5.94143 3.91632 6.74487 4.41187 7.24042V7.24042C4.82135 7.6499 4.89147 8.28086 4.66049 8.81189C4.62408 8.89559 4.58906 8.98004 4.55546 9.0652C4.34302 9.60365 3.84744 10 3.2686 10V10C2.56797 10 2 10.568 2 11.2686V12.7314C2 13.432 2.56797 14 3.2686 14V14C3.84744 14 4.34302 14.3963 4.55546 14.9348C4.58906 15.02 4.62408 15.1044 4.66049 15.1881C4.89148 15.7191 4.82135 16.3501 4.41187 16.7596V16.7596C3.91632 17.2551 3.91632 18.0586 4.41187 18.5541L5.44578 19.588C5.94132 20.0836 6.74474 20.0836 7.24028 19.588V19.588C7.64975 19.1786 8.28071 19.1084 8.81173 19.3394C8.89548 19.3759 8.97998 19.4109 9.0652 19.4445C9.60365 19.657 10 20.1526 10 20.7314V20.7314C10 21.432 10.568 22 11.2686 22H12.7314C13.432 22 14 21.432 14 20.7314V20.7314C14 20.1526 14.3963 19.657 14.9348 19.4445C15.02 19.4109 15.1045 19.3759 15.1882 19.3395C15.7192 19.1085 16.3501 19.1786 16.7595 19.5881V19.5881C17.255 20.0836 18.0584 20.0836 18.5539 19.5881L19.588 18.554C20.0835 18.0585 20.0835 17.2552 19.588 16.7597V16.7597C19.1785 16.3502 19.1084 15.7193 19.3394 15.1883C19.3759 15.1046 19.4109 15.02 19.4445 14.9348C19.657 14.3964 20.1526 14 20.7314 14V14C21.432 14 22 13.432 22 12.7314V11.2686C22 10.568 21.432 10 20.7314 10V10C20.1526 10 19.657 9.60365 19.4445 9.0652C19.4109 8.97996 19.3759 8.89544 19.3394 8.81166C19.1084 8.28068 19.1785 7.64977 19.588 7.24033V7.24033C20.0835 6.74483 20.0835 5.94147 19.588 5.44597L18.5539 4.41193C18.0584 3.91642 17.255 3.91642 16.7595 4.41193V4.41193C16.3501 4.82138 15.7192 4.8915 15.1882 4.66052C15.1045 4.6241 15.02 4.58907 14.9348 4.55546C14.3963 4.34302 14 3.84744 14 3.2686V3.2686Z"></path>
+              </svg>
+              Misc
+            </button>
+          </div>
+
+          <div class="settings-page-container">
+            <div class="settings-tab-content active" id="tab-customization">
+              <div class="sgnittes">
+                <h3>Theme 🎨</h3>
+                <div class="setting-item">
+                  <label for="themeSelect">Select Theme:</label>
+                  <select id="themeSelect">
+                    <option value="original">Original (Dark Blue)</option>
+                    <option value="Valentines">Seasonal Theme</option>
+                    <option value="dark">Dark Theme</option>
+                    <option value="light">Light Theme</option>
+                    <option value="midnight">Midnight</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="forest">Forest</option>
+                    <option value="purple">Purple Dream</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                    <option value="matrix">Matrix</option>
+                    <option value="neon">Neon Lights</option>
+                    <option value="fire">Fire</option>
+                    <option value="ice">Ice</option>
+                    <option value="Fabian">Fabian</option>
+                    <option value="Alyvia">Dog</option>
+                  </select>
+                </div>
+                <p style="font-size: 12px; color: var(--text-color); opacity: 0.8; margin-top: 8px;">
+                  ✨ Sidebar colors automatically match your selected theme!
+                </p>
+              </div>
+              <div class="sgnittes">
+                <h3>Visual Effects</h3>
+                <div class="setting-item">
+                  <label>
+                    <input type="checkbox" id="snowToggle" checked /> Enable Particle Effects
+                  </label>
+                </div>
+                <div class="setting-item">
+                  <label for="particleEffectSelect">Effect Style:</label>
+                  <select id="particleEffectSelect">
+                    <option value="snow">Snow</option>
+                    <option value="stars">Stars</option>
+                    <option value="hearts">Hearts</option>
+                    <option value="rain">Rain</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-tab-content" id="tab-misc">
+              <div class="sgnittes">
+                <h3>Close Confirmation</h3>
+                <div class="setting-item">
+                  <label>
+                    <input type="checkbox" id="antiTabCloseToggle" /> Prevent Accidental Tab Close
+                  </label>
+                  <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                    Shows a confirmation text when trying to close the tab.
+                  </p>
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>Debug Options</h3>
+                <div class="setting-item">
+                  <label>
+                    <input type="checkbox" id="debugModeToggle" /> Enable Debug Mode
+                  </label>
+                  <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                    Shows console logs and debug information in the browser console.
+                  </p>
+                </div>
+                <div class="setting-item">
+                  <button id="clearCachebtuon" class="btuon-secondary">Clear Cache &amp; Reload</button>
+                  <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
+                    Clears all stored settings and reloads the page.
+                  </p>
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>Contributors 🛠️</h3>
+                <div class="contributors-grid">
+                  <div class="contributor-card"><div class="contributor-name">iizent</div><div class="contributor-role">Founder</div></div>
+                  <div class="contributor-card"><div class="contributor-name">iianzo</div><div class="contributor-role">Owner</div></div>
+                  <div class="contributor-card"><div class="contributor-name">iimilo</div><div class="contributor-role">Lead-Developer</div></div>
+                  <div class="contributor-card"><div class="contributor-name">jordandevs</div><div class="contributor-role">Owner</div></div>
+                  <div class="contributor-card"><div class="contributor-name">siulesoj</div><div class="contributor-role">Co-Owner</div></div>
+                  <div class="contributor-card"><div class="contributor-name">naibaf</div><div class="contributor-role">The shy one</div></div>
+                  <div class="contributor-card"><div class="contributor-name">caasi</div><div class="contributor-role">The bossman</div></div>
+                  <div class="contributor-card"><div class="contributor-name">coding4hours</div><div class="contributor-role">Contributor </div></div>
+                  <div class="contributor-card"><div class="contributor-name">zooker</div><div class="contributor-role">Big Helper</div></div>
+
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>Support Server</h3>
+                <div class="discord-info">
+                  <p><strong>Join our Support Server!</strong></p>
+                  <p>Join our community server for more updates and support.</p>
+                  <a href="https://dsc.gg/relicnetworks" target="_blank" rel="noopener noreferrer" class="social-link discord-link">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="social-icon">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    Join Relic Support Server
+                  </a>
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>About</h3>
+                <div class="about-info">
+                  <p><strong>Relic</strong></p>
+                  <p>Version: 1.3.1</p>
+                  <p>Latest Update: Apr 12 2026</p>
+                  <br />
+                  <p><strong>Latest Special Features:</strong></p>
+                  <p>Particle Effects</p>
+                  <br />
+                  <p style="font-size: 12px; opacity: 0.7">Created by: anzo, also skidded by anzo and skidded by anzo</p>
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>Legal</h3>
+                <div class="legal-info">
+                  <p><strong>Legal Information</strong></p>
+                  <a href="assets/common/privacypolicy.html">Privacy Policy</a>
+                  <a href="assets/common/tos.html">Terms Of Service</a>
+                  <p>Latest Update: January 12 2025</p>
+                </div>
+              </div>
+              <div class="sgnittes">
+                <h3>System Information</h3>
+                <div class="system-info">
+                  <p><strong>Browser:</strong> <span id="browserInfo">Loading...</span></p>
+                  <p><strong>Platform:</strong> <span id="platformInfo">Loading...</span></p>
+                  <p><strong>Screen Resolution:</strong> <span id="screenInfo">Loading...</span></p>
+                  <p><strong>Storage:</strong> <span id="storageInfo">Loading...</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="gamepres" class="content" style="display: none">
+          <div class="game-play-area" id="game-play-area">
+            <div class="game-controls">
+              <button class="game-control-btuon" id="refreshbtuon" title="Refresh Game">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+              </button>
+              <button class="game-control-btuon" id="fullscreenbtuon" title="Fullscreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                </svg>
               </button>
             </div>
-            <div class="games-grid" id="recently-added-games">
-              <!-- Games will be inserted here by JavaScript -->
-            </div>
+            <iframe id="game-iframe" class="game-iframe" title="Game Display"></iframe>
           </div>
-
+          <br />
+          <button id="backToHomeGame">Back to Home</button>
         </div>
 
-        <div class="homepage-info-buttons">
-          <button id="creditsBtn" class="info-btn">Credits</button>
-          <div class="user-counter-container">
-            <div class="user-counter-content">
-              <span class="user-counter-text">
-                <span id="activeUsers"></span> users online
-              </span>
-              <span class="user-counter-pulse"></span>
-            </div>
-          </div>
-          <button id="updateLogBtn" class="info-btn">Update Log</button>
-        </div>
-      </div>
-
-      <div id="content-srch" class="content" style="display:none;">
-        <div class="search-iframe-container">
-          <iframe src="search.html" class="search-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-popups-to-escape-sandbox allow-top-navigation" allowfullscreen></iframe>
-        </div>
-      </div>
-
-      <div id="content-gms" class="content" style="display:none;">
-        <h1>Gᾰmes</h1>
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="Search for gᾰmes..." />
-          <button id="searchBtn">Search</button>
-        </div>
-        <div id="game-list" class="game-grid"></div>
-      </div>
-
-      <div id="content-emulated" class="content" style="display:none;">
-        <h1>Emulated Gᾰmes</h1>
-        <p>THIS IS BETA!!!</p>
-        <div class="search-container">
-          <input type="text" id="searchEmulatedInput" placeholder="Search emulated gᾰmes..." />
-          <button id="searchEmulatedBtn">Search</button>
-        </div>
-        <div id="emulated-list" class="game-grid"></div>
-      </div>
-
-      <div id="content-about" class="content" style="display:none;">
-        <h2>About</h2>
-        <h1>Latest Note: [11/17/25]</h1>
-        <br>
-        <h3>This</h3>
-        <h3>Is</h3>
-        <h3>Terminated</h3>
-      </div>
-
-      <div id="content-aps" class="content" style="display:none;">
-        <h1>Shortcuts</h1>
-        <div id="app-list" class="app-grid"></div>
-        <button id="backToHomeApps">Back to Home</button>
-      </div>
-
-      <div id="content-settings" class="content" style="display:none;">
-        <h1>Settings</h1>
-        <div class="settings-tabs">
-          <button class="settings-tab-btn active" data-tab="cloaking">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 4c1.648 0 3 1.352 3 3v3H9V7c0-1.648 1.352-3 3-3zm5 6V7c0-2.752-2.248-5-5-5S7 4.248 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1zM6 12h12v8H6v-8z"></path>
-            </svg>
-            Cloaking
-          </button>
-          <button class="settings-tab-btn" data-tab="customization">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18.33 3.57s.27-.8-.31-1.36c-.53-.52-1.22-.24-1.22-.24-.61.3-5.76 3.47-7.67 5.57-.86.96-2.06 3.79-1.09 4.82.92.98 3.96-.17 4.79-1 2.06-2.06 5.21-7.17 5.5-7.79zM1.4 17.65c2.37-1.56 1.46-3.41 3.23-4.64.93-.65 2.22-.62 3.08.29.63.67.8 2.57-.16 3.46-1.57 1.45-4 1.55-6.15.89z"></path>
-            </svg>
-            Customization
-          </button>
-          <button class="settings-tab-btn" data-tab="misc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M14 3.2686C14 2.56797 13.432 2 12.7314 2H11.2686C10.568 2 10 2.56797 10 3.2686V3.2686C10 3.84745 9.60365 4.34302 9.0652 4.55546C8.97998 4.58908 8.89547 4.62413 8.81172 4.66056C8.2807 4.89156 7.64975 4.82144 7.24027 4.41197V4.41197C6.74474 3.91643 5.94132 3.91643 5.44579 4.41197L4.41187 5.44588C3.91632 5.94143 3.91632 6.74487 4.41187 7.24042V7.24042C4.82135 7.6499 4.89147 8.28086 4.66049 8.81189C4.62408 8.89559 4.58906 8.98004 4.55546 9.0652C4.34302 9.60365 3.84744 10 3.2686 10V10C2.56797 10 2 10.568 2 11.2686V12.7314C2 13.432 2.56797 14 3.2686 14V14C3.84744 14 4.34302 14.3963 4.55546 14.9348C4.58906 15.02 4.62408 15.1044 4.66049 15.1881C4.89148 15.7191 4.82135 16.3501 4.41187 16.7596V16.7596C3.91632 17.2551 3.91632 18.0586 4.41187 18.5541L5.44578 19.588C5.94132 20.0836 6.74474 20.0836 7.24028 19.588V19.588C7.64975 19.1786 8.28071 19.1084 8.81173 19.3394C8.89548 19.3759 8.97998 19.4109 9.0652 19.4445C9.60365 19.657 10 20.1526 10 20.7314V20.7314C10 21.432 10.568 22 11.2686 22H12.7314C13.432 22 14 21.432 14 20.7314V20.7314C14 20.1526 14.3963 19.657 14.9348 19.4445C15.02 19.4109 15.1045 19.3759 15.1882 19.3395C15.7192 19.1085 16.3501 19.1786 16.7595 19.5881V19.5881C17.255 20.0836 18.0584 20.0836 18.5539 19.5881L19.588 18.554C20.0835 18.0585 20.0835 17.2552 19.588 16.7597V16.7597C19.1785 16.3502 19.1084 15.7193 19.3394 15.1883C19.3759 15.1046 19.4109 15.02 19.4445 14.9348C19.657 14.3964 20.1526 14 20.7314 14V14C21.432 14 22 13.432 22 12.7314V11.2686C22 10.568 21.432 10 20.7314 10V10C20.1526 10 19.657 9.60365 19.4445 9.0652C19.4109 8.97996 19.3759 8.89544 19.3394 8.81166C19.1084 8.28068 19.1785 7.64977 19.588 7.24033V7.24033C20.0835 6.74483 20.0835 5.94147 19.588 5.44597L18.5539 4.41193C18.0584 3.91642 17.255 3.91642 16.7595 4.41193V4.41193C16.3501 4.82138 15.7192 4.8915 15.1882 4.66052C15.1045 4.6241 15.02 4.58907 14.9348 4.55546C14.3963 4.34302 14 3.84744 14 3.2686V3.2686Z"></path>
-            </svg>
-            Misc
-          </button>
-        </div>
-
-        <div class="settings-page-container">
-          <div class="settings-tab-content active" id="tab-cloaking">
-            <div class="settings-section">
-              <h3>Tab Cloaking</h3>
-              <div class="setting-item">
-                <label for="customTitle">Custom Title:</label>
-                <input type="text" id="customTitle" placeholder="e.g., Google" />
-              </div>
-              <div class="setting-item">
-                <label for="customFavicon">Custom Favicon URL:</label>
-                <input type="text" id="customFavicon" placeholder="e.g., https://google.com/favicon.ico" />
-              </div>
-              <div class="setting-item">
-                <label for="presetSelect">Presets:</label>
-                <select id="presetSelect">
-                  <option value="">-- Select Cloaking--</option>
-                  <option value="google">Google</option>
-                  <option value="classroom">Google Classroom</option>
-                  <option value="bing">Bing</option>
-                  <option value="nearpod">Nearpod</option>
-                  <option value="powerschool">PowerSchool</option>
-                  <option value="chrome">Chrome New Tab</option>
-                  <option value="edge">Edge New Tab</option>
-                </select>
-              </div>
-              <div class="setting-buttons">
-                <button id="applyBtn" class="btn-primary">Apply</button>
-                <button id="resetBtn" class="btn-secondary">Reset</button>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>Panic Button</h3>
-              <div class="setting-item">
-                <label for="hotkey-input">Panic Hotkey:</label>
-                <input type="text" id="hotkey-input" placeholder="Press a key" readonly />
-                <button id="change-hotkey-btn" class="btn-small">Change</button>
-              </div>
-              <div class="setting-item">
-                <label for="redirect-url-input">Redirect URL:</label>
-                <input type="text" id="redirect-url-input" placeholder="https://google.com" />
-                <button id="change-URL-btn" class="btn-small">Change</button>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>About Blank</h3>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox" id="aboutBlankToggle" /> Enable About:Blank Cloaking
-                </label>
-                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
-                  When enabled, the site will open in an about:blank window to hide from browser history.
-                </p>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>Anti Tab Close</h3>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox" id="antiTabCloseToggle" /> Prevent Accidental Tab Close
-                </label>
-                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
-                  Shows a confirmation text when trying to close the tab.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-tab-content" id="tab-customization">
-            <div class="settings-section">
-              <h3>Theme 🎨</h3>
-              <div class="setting-item">
-                <label for="themeSelect">Select Theme:</label>
-                <select id="themeSelect">
-                  <option value="original">Original (Dark Blue)</option>
-                  <option value="dark">Dark Theme</option>
-                  <option value="light">Light Theme</option>
-                  <option value="midnight">Midnight</option>
-                  <option value="ocean">Ocean</option>
-                  <option value="sunset">Sunset</option>
-                  <option value="forest">Forest</option>
-                  <option value="purple">Purple Dream</option>
-                  <option value="cyberpunk">Cyberpunk</option>
-                  <option value="matrix">Matrix</option>
-                  <option value="neon">Neon Lights</option>
-                  <option value="fire">Fire</option>
-                  <option value="ice">Ice</option>
-                  <option value="retro">Retro</option>
-                  <option value="Anzo">Exclusive: Anzo</option>
-                </select>
-              </div>
-              <p style="font-size: 12px; color: var(--text-color); opacity: 0.8; margin-top: 8px;">
-                ✨ Sidebar colors automatically match your selected theme!
-              </p>
-            </div>
-
-            <div class="settings-section">
-              <h3>Visual Effects</h3>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox" id="snowToggle" checked /> Enable Snow Effect
-                </label>
-                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
-                  Adds falling snow animation to the page.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-tab-content" id="tab-misc">
-            <div class="settings-section">
-              <h3>Debug Options</h3>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox" id="debugModeToggle" /> Enable Debug Mode
-                </label>
-                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
-                  Shows console logs and debug information in the browser console.
-                </p>
-              </div>
-              <div class="setting-item">
-                <button id="clearCacheBtn" class="btn-secondary">Clear Cache & Reload</button>
-                <p style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.8;">
-                  Clears all stored settings and reloads the page.
-                </p>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>Contributors 🛠️</h3>
-              <div class="contributors-grid">
-                <div class="contributor-card">
-                  <div class="contributor-icon">👑</div>
-                  <div class="contributor-name">Az</div>
-                  <div class="contributor-role">Owner</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">👑</div>
-                  <div class="contributor-name">Joseluis</div>
-                  <div class="contributor-role">Co-Owner</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">🛠️</div>
-                  <div class="contributor-name">Michael</div>
-                  <div class="contributor-role">Developer</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">🛠️</div>
-                  <div class="contributor-name">Coding4Hours</div>
-                  <div class="contributor-role">Developer</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">🛠️</div>
-                  <div class="contributor-name">Jordan</div>
-                  <div class="contributor-role">Developer</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">🤔</div>
-                  <div class="contributor-name">Fabian</div>
-                  <div class="contributor-role">Some Random</div>
-                </div>
-                <div class="contributor-card">
-                  <div class="contributor-icon">💻</div>
-                  <div class="contributor-name">David</div>
-                  <div class="contributor-role">Developer Larp</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>About</h3>
-              <div class="about-info">
-                <p><strong>Relic Ultimate</strong></p>
-                <p>Version: 1.2.6</p>
-                <p>Latest Update: December 2025</p>
-                <br>
-                <p><strong>Latest Features:</strong></p>
-                <ul style="text-align: left; padding-left: 20px;">
-                  <li>Added a bunch new gᾰmes</li>
-                  <li>Revamped the <b>settings</b></li>
-                  <li>Fixed Icy Purple Head</li>
-                  <li>Updated Bacon May Die</li>
-                  <li>Fixed small patches</li>
-                  <li>Did some search changes</li>
-                  <li>✨ Added Daily Game feature</li>
-                </ul>
-                <br>
-                <p style="font-size: 12px; opacity: 0.7;">
-                  Created by: az,
-                </p>
-              </div>
-            </div>
-
-            <div class="settings-section">
-              <h3>System Information</h3>
-              <div class="system-info">
-                <p><strong>Browser:</strong> <span id="browserInfo">Loading...</span></p>
-                <p><strong>Platform:</strong> <span id="platformInfo">Loading...</span></p>
-                <p><strong>Screen:</strong> <span id="screenInfo">Loading...</span></p>
-                <p><strong>Storage Used:</strong> <span id="storageInfo">Loading...</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div id="game-display" class="content" style="display:none;">
-        <div class="game-play-area" id="game-play-area">
-          <div class="game-controls">
-            <button class="game-control-btn" id="refreshBtn" title="Refresh Game">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-              </svg>
-            </button>
-            <button class="game-control-btn" id="fullscreenBtn" title="Fullscreen">
-<button class="game-control-btn" id="fullscreenBtn" title="Fullscreen">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-              </svg>
-            </button>
-          </div>
-          <iframe id="game-iframe" class="game-iframe" title="Game Display"></iframe>
-        </div>
-        <br />
-        <button id="backToHomeGame">Back to Home</button>
       </div>
     </div>
-  </div>
 
-  <div id="snow-container"></div>
+    <div id="snow-container"></div>
+    <div id="recently-played-games" style="display:none" aria-hidden="true"></div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="scripts/load.js"></script>
 
-  <script src="others/assets/scripts/console.js"></script>
-  <script src="others/assets/scripts/gms.js"></script>
-  <script src="others/assets/scripts/stats.js"></script>
-  <script src="others/assets/scripts/recently-played.js"></script>
-  <script src="others/assets/scripts/recently-added.js"></script>
-  <script src="assets/scripts/firebase-config.js"></script>
-  <script src="assets/scripts/counter.js"></script>
-  <script src="public/javascript/daily.js"></script>
-  <script src="scripts.js"></script>
-  
-  <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        const updateLogModal = document.getElementById('updateLogModal');
-        if (updateLogModal) {
-          updateLogModal.style.display = 'flex';
-          console.log('Update log modal displayed automatically');
+    <script>
+      window.openAppInSearch = function (appUrl) {
+        document.querySelectorAll('.content').forEach((content) => { content.style.display = 'none'; });
+        document.getElementById('content-srch').style.display = 'block';
+        document.querySelectorAll('.sidebar-link').forEach((link) => { link.classList.remove('active'); });
+        document.getElementById('searchLink').classList.add('active');
+        const searchContainer = document.getElementById('content-srch');
+        const searchIframe = typeof ensureEmbeddedFrameLoaded === 'function'
+          ? ensureEmbeddedFrameLoaded(searchContainer)
+          : document.querySelector('#content-srch .search-iframe');
+        if (searchIframe) {
+          const sendCreateTab = () => { searchIframe.contentWindow?.postMessage({ type: 'createTab', url: appUrl }, '*'); };
+          if (searchIframe.contentWindow && searchIframe.contentWindow.location && searchIframe.contentWindow.location.href !== 'about:blank') {
+            setTimeout(sendCreateTab, 100);
+          } else {
+            searchIframe.addEventListener('load', () => { setTimeout(sendCreateTab, 50); }, { once: true });
+          }
         }
-      }, 500);
-    });
+      };
+    </script>
 
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('info-close')) {
-        const modalId = e.target.getAttribute('data-modal');
-        const modal = document.getElementById(modalId);
-        if (modal) {
-          modal.style.display = 'none';
+    <script>
+      (function () {
+        const searchInput = document.getElementById('searchAppsInput');
+        const searchBtn   = document.getElementById('searchAppsbtuon');
+        const noResults   = document.createElement('div');
+        noResults.id = 'apps-no-results';
+        noResults.style.cssText = 'display:none; text-align:center; padding:40px 20px; color:var(--text-color, #aaa); opacity:0.7; font-size:15px; line-height:1.6;';
+        noResults.innerHTML = `Sorry, you may be right or we are just slow developers. Check back again soon or <a href="https://dsc.gg/relicnetworks" target="_blank" rel="noopener noreferrer" style="color:var(--accent-color);">join the support server</a> to suggest a Shortcut.`;
+        document.getElementById('app-list').after(noResults);
+        function filterApps() {
+          const query = searchInput.value.toLowerCase().trim();
+          const appCards = document.querySelectorAll('#app-list .app-card, #app-list [class*="card"], #app-list > *');
+          let visibleCount = 0;
+          appCards.forEach((card) => {
+            const visible = card.textContent.toLowerCase().includes(query);
+            card.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+          });
+          noResults.style.display = visibleCount === 0 && query.length > 0 ? 'block' : 'none';
         }
-      }
-      
-      if (e.target.classList.contains('info-modal')) {
-        e.target.style.display = 'none';
-      }
-    });
+        searchInput.addEventListener('input', filterApps);
+        searchBtn.addEventListener('click', filterApps);
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') filterApps(); });
+      })();
+    </script>
 
-    const updateLogBtn = document.getElementById('updateLogBtn');
-    if (updateLogBtn) {
-      updateLogBtn.addEventListener('click', function() {
-        const updateLogModal = document.getElementById('updateLogModal');
-        if (updateLogModal) {
-          updateLogModal.style.display = 'flex';
-        }
+    <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          const updlogmodule = document.getElementById('updlogmodule');
+          if (updlogmodule) updlogmodule.style.display = 'flex';
+        }, 500);
       });
-    }
 
-    const creditsBtn = document.getElementById('creditsBtn');
-    if (creditsBtn) {
-      creditsBtn.addEventListener('click', function() {
-        const creditsModal = document.getElementById('creditsModal');
-        if (creditsModal) {
-          creditsModal.style.display = 'flex';
+      document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('info-close')) {
+          const modal = document.getElementById(e.target.getAttribute('data-modal'));
+          if (modal) modal.style.display = 'none';
         }
+        if (e.target.classList.contains('info-modal')) e.target.style.display = 'none';
       });
-    }
-  </script>
 
-  <script>
-    console.log('Page loaded, checking for games data...');
-    setTimeout(() => {
-      console.log('Games available:', typeof games !== 'undefined' ? games.length : 'NOT LOADED');
-      console.log('Carousel track found:', {
-        top: !!document.getElementById('carousel-track-top')
+      document.getElementById('updateLogbtuon')?.addEventListener('click', function () {
+        const m = document.getElementById('updlogmodule');
+        if (m) m.style.display = 'flex';
       });
-    }, 2000);
-  </script>
 
-</body>
+      document.getElementById('creditsbtuon')?.addEventListener('click', function () {
+        const m = document.getElementById('creditsModal');
+        if (m) m.style.display = 'flex';
+      });
+    </script>
+
+    <script>
+      (function () {
+        const countEl = document.getElementById('onlineCount');
+        if (!countEl) return;
+        let currentCount = null;
+        function animateCount(newVal) {
+          if (currentCount === newVal) return;
+          currentCount = newVal;
+          countEl.textContent = newVal.toLocaleString();
+        }
+        function tryFirebasePresence() {
+          if (typeof firebase === 'undefined' || !firebase.database) return false;
+          try {
+            const db        = firebase.database();
+            const sessionId = Math.random().toString(36).slice(2);
+            const userRef   = db.ref('online_users/user_' + sessionId);
+            userRef.set({ timestamp: firebase.database.ServerValue.TIMESTAMP });
+            userRef.onDisconnect().remove();
+            db.ref('online_users').on('value', (snap) => {
+              animateCount(Math.max(1, snap.numChildren()));
+            });
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+        function startSimulated() {
+          const hour  = new Date().getHours();
+          const base  = hour >= 15 && hour <= 22 ? 42 : 18;
+          let count   = base + Math.floor(Math.random() * 20);
+          animateCount(count);
+          setInterval(() => {
+            const delta = Math.floor(Math.random() * 5) - 2;
+            count = Math.max(5, count + delta);
+            animateCount(count);
+          }, 8000 + Math.random() * 6000);
+        }
+        let firebaseConnected = tryFirebasePresence();
+        if (!firebaseConnected) {
+          window.addEventListener('load', () => {
+            if (!firebaseConnected) {
+              firebaseConnected = tryFirebasePresence();
+              if (!firebaseConnected) startSimulated();
+            }
+          });
+          setTimeout(() => { if (!firebaseConnected) startSimulated(); }, 2500);
+        }
+      })();
+    </script>
+
+    <script>
+      (function () {
+        const input       = document.getElementById('homeSearchInput');
+        const suggestions = document.getElementById('homeSearchSuggestions');
+        const clearBtn    = document.getElementById('homeSearchClear');
+        if (!input) return;
+
+        let allItems = [];
+        let activeIdx = -1;
+
+        function buildIndex() {
+          allItems = [];
+          if (typeof games !== 'undefined' && Array.isArray(games)) {
+            games.forEach(g => allItems.push({ label: g.name || g.title, type: 'Game', data: g }));
+          }
+          document.querySelectorAll('#app-list .app-card, #app-list [data-name]').forEach(el => {
+            const name = el.dataset.name || el.querySelector('.app-name, span, p')?.textContent?.trim();
+            if (name) allItems.push({ label: name, type: 'App', data: { name, el } });
+          });
+        }
+
+        let attempts = 0;
+        function tryBuild() {
+          buildIndex();
+          if (allItems.length === 0 && attempts++ < 10) setTimeout(tryBuild, 500);
+        }
+        setTimeout(tryBuild, 800);
+
+        function getMatches(q) {
+          if (!q) return [];
+          const lower = q.toLowerCase();
+          return allItems.filter(item => item.label && item.label.toLowerCase().includes(lower)).slice(0, 7);
+        }
+
+        function openWebSearch(q) {
+          const ddUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(q) + '&t=h_&ia=web';
+
+          document.querySelectorAll('.content').forEach(c => { c.style.display = 'none'; });
+          document.getElementById('content-srch').style.display = 'block';
+          document.querySelectorAll('.sidebar-link').forEach(l => { l.classList.remove('active'); });
+          document.getElementById('searchLink').classList.add('active');
+
+          const searchContainer = document.getElementById('content-srch');
+          const searchIframe = typeof ensureEmbeddedFrameLoaded === 'function'
+            ? ensureEmbeddedFrameLoaded(searchContainer)
+            : document.querySelector('#content-srch .search-iframe');
+
+          if (searchIframe) {
+            const sendCreateTab = () => {
+              searchIframe.contentWindow?.postMessage({ type: 'createTab', url: ddUrl }, '*');
+            };
+            if (
+              searchIframe.contentWindow &&
+              searchIframe.contentWindow.location &&
+              searchIframe.contentWindow.location.href !== 'about:blank'
+            ) {
+              setTimeout(sendCreateTab, 100);
+            } else {
+              searchIframe.addEventListener('load', () => { setTimeout(sendCreateTab, 50); }, { once: true });
+            }
+          }
+
+          input.value = '';
+          clearBtn.classList.remove('visible');
+          suggestions.classList.remove('open');
+        }
+
+        function renderSuggestions(q) {
+          const matches = getMatches(q);
+          activeIdx = -1;
+          suggestions.innerHTML = '';
+          if (!q) { suggestions.classList.remove('open'); return; }
+
+          if (matches.length > 0) {
+            matches.forEach((item, i) => {
+              const el = document.createElement('div');
+              el.className = 'home-suggestion-item';
+              el.dataset.idx = i;
+              el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span class="home-suggestion-label">${item.label}</span><span class="home-suggestion-tag">${item.type}</span>`;
+              el.addEventListener('mousedown', (e) => { e.preventDefault(); selectItem(item); });
+              suggestions.appendChild(el);
+            });
+          } else {
+            const empty = document.createElement('div');
+            empty.className = 'home-suggestion-empty';
+            empty.textContent = `No games found for "${q}"`;
+            suggestions.appendChild(empty);
+          }
+
+          const webRow = document.createElement('div');
+          webRow.className = 'home-suggestion-web';
+          webRow.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Search the web for "<strong>${q}</strong>"</span>`;
+          webRow.addEventListener('mousedown', (e) => { e.preventDefault(); openWebSearch(q); });
+          suggestions.appendChild(webRow);
+
+          suggestions.classList.add('open');
+        }
+
+        function selectItem(item) {
+          suggestions.classList.remove('open');
+          input.value = '';
+          clearBtn.classList.remove('visible');
+          if (item.type === 'Game') {
+            const game = item.data;
+            if (typeof loadGame === 'function') { loadGame(game); }
+            else {
+              document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+              document.getElementById('gamepres').style.display = 'block';
+              document.getElementById('game-iframe').src = game.url || game.src || '';
+              if (typeof RecentlyPlayed !== 'undefined') RecentlyPlayed.add(game);
+            }
+          } else if (item.type === 'App') {
+            document.getElementById('appsLink').click();
+            setTimeout(() => {
+              const searchApps = document.getElementById('searchAppsInput');
+              if (searchApps) { searchApps.value = item.label; searchApps.dispatchEvent(new Event('input')); }
+            }, 200);
+          }
+        }
+
+        function handleKeydown(e) {
+          const items = suggestions.querySelectorAll('.home-suggestion-item, .home-suggestion-web');
+          if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); }
+          else if (e.key === 'Enter') {
+            e.preventDefault();
+            const q = input.value.trim();
+            if (!q) return;
+            /* if a game row is highlighted pick it, otherwise web search */
+            const gameItems = suggestions.querySelectorAll('.home-suggestion-item');
+            if (activeIdx >= 0 && activeIdx < gameItems.length) {
+              const idx = parseInt(gameItems[activeIdx].dataset.idx);
+              const matches = getMatches(q);
+              if (matches[idx]) { selectItem(matches[idx]); return; }
+            }
+            openWebSearch(q);
+            return;
+          } else if (e.key === 'Escape') { suggestions.classList.remove('open'); return; }
+          items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+        }
+
+        input.addEventListener('input', () => {
+          const q = input.value;
+          clearBtn.classList.toggle('visible', q.length > 0);
+          renderSuggestions(q);
+        });
+        input.addEventListener('keydown', handleKeydown);
+        clearBtn.addEventListener('click', () => {
+          input.value = '';
+          clearBtn.classList.remove('visible');
+          suggestions.classList.remove('open');
+          input.focus();
+        });
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.home-search-bar-wrap')) suggestions.classList.remove('open');
+        });
+      })();
+    </script>
+
+    <script>
+      console.log('Page loaded, checking for application data...');
+      setTimeout(() => {
+        console.log('application available:', typeof games !== 'undefined' ? games.length : 'NOT LOADED');
+      }, 2000);
+      (function watchList(id, label) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const observer = new MutationObserver(() => { const count = el.children.length; if (count > 0) { console.log(label + ':', count); observer.disconnect(); } });
+        observer.observe(el, { childList: true });
+        if (el.children.length > 0) { console.log(label + ':', el.children.length); observer.disconnect(); }
+      })('app-list', 'Apps available');
+      (function watchList(id, label) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const observer = new MutationObserver(() => { const count = el.children.length; if (count > 0) { console.log(label + ':', count); observer.disconnect(); } });
+        observer.observe(el, { childList: true });
+        if (el.children.length > 0) { console.log(label + ':', el.children.length); observer.disconnect(); }
+      })('emulated-list', 'Emulated application available');
+    </script>
+  </body>
 </html>
